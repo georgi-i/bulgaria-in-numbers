@@ -1,0 +1,1333 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>България в числа — Население, Автомобили, Жилища</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f5f7;
+    --surface: #ffffff;
+    --surface2: #fbfbfd;
+    --text-primary: #1d1d1f;
+    --text-secondary: #6e6e73;
+    --text-tertiary: #a1a1a6;
+    --accent: #0071e3;
+    --accent-light: #e8f0fe;
+    --accent-green: #34c759;
+    --accent-orange: #ff9f0a;
+    --accent-red: #ff3b30;
+    --border: rgba(0,0,0,0.08);
+    --shadow: 0 2px 12px rgba(0,0,0,0.06), 0 0 1px rgba(0,0,0,0.04);
+    --shadow-hover: 0 8px 32px rgba(0,0,0,0.12), 0 0 1px rgba(0,0,0,0.06);
+    --radius: 18px;
+    --radius-sm: 10px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* NAV */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(245,245,247,0.85);
+    backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    height: 52px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-brand {
+    font-size: 17px; font-weight: 600; letter-spacing: -0.3px;
+    color: var(--text-primary); text-decoration: none;
+  }
+  .nav-links { display: flex; gap: 28px; }
+  .nav-links a {
+    font-size: 13px; color: var(--text-secondary); text-decoration: none;
+    font-weight: 500; letter-spacing: -0.1px;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--text-primary); }
+
+  /* HERO */
+  .hero {
+    padding: 80px 24px 60px;
+    text-align: center;
+    max-width: 860px;
+    margin: 0 auto;
+  }
+  .hero-label {
+    font-size: 13px; font-weight: 600; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--accent);
+    margin-bottom: 16px;
+  }
+  .hero h1 {
+    font-size: clamp(36px, 6vw, 64px);
+    font-weight: 700; letter-spacing: -1.5px; line-height: 1.06;
+    color: var(--text-primary); margin-bottom: 20px;
+  }
+  .hero p {
+    font-size: 19px; font-weight: 400; color: var(--text-secondary);
+    line-height: 1.5; max-width: 540px; margin: 0 auto 40px;
+  }
+
+  /* NATIONAL STATS STRIP */
+  .stats-strip {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px; max-width: 980px; margin: 0 auto 56px;
+    padding: 0 24px;
+  }
+  .stat-card {
+    background: var(--surface); border-radius: var(--radius);
+    padding: 24px; text-align: center;
+    box-shadow: var(--shadow);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
+  .stat-num {
+    font-size: 32px; font-weight: 700; letter-spacing: -1px;
+    color: var(--text-primary);
+  }
+  .stat-num span { font-size: 20px; font-weight: 500; }
+  .stat-label {
+    font-size: 13px; color: var(--text-secondary);
+    margin-top: 6px; font-weight: 500;
+  }
+
+  /* SECTION */
+  .section {
+    max-width: 980px; margin: 0 auto 56px;
+    padding: 0 24px;
+  }
+  .section-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 20px; gap: 12px; flex-wrap: wrap;
+  }
+  .section-title {
+    font-size: 22px; font-weight: 700; letter-spacing: -0.5px;
+    white-space: nowrap;
+  }
+  .section-subtitle {
+    font-size: 13px; color: var(--text-secondary);
+  }
+
+  /* SEARCH */
+  .search-wrap {
+    position: relative; max-width: 980px;
+    margin: 0 auto 20px; padding: 0 24px;
+  }
+  .search-input {
+    width: 100%; padding: 14px 18px 14px 44px;
+    font-family: inherit; font-size: 15px;
+    background: var(--surface); border: 1.5px solid var(--border);
+    border-radius: 12px; outline: none; color: var(--text-primary);
+    box-shadow: var(--shadow);
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .search-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,113,227,0.12); }
+  .search-icon {
+    position: absolute; left: 38px; top: 50%; transform: translateY(-50%);
+    color: var(--text-tertiary); pointer-events: none;
+  }
+
+  /* TABS */
+  .tabs {
+    display: flex; gap: 6px;
+    max-width: 980px; margin: 0 auto 24px;
+    padding: 0 24px; flex-wrap: wrap;
+  }
+  .tab-btn {
+    padding: 8px 18px; font-family: inherit; font-size: 13px;
+    font-weight: 600; border: none; border-radius: 20px;
+    cursor: pointer; transition: all 0.2s;
+    background: var(--surface); color: var(--text-secondary);
+    box-shadow: var(--shadow);
+  }
+  .tab-btn.active {
+    background: var(--text-primary); color: white;
+  }
+  .tab-btn:hover:not(.active) { background: #ebebed; }
+
+  /* SORT BUTTONS */
+  .sort-bar {
+    display: flex; gap: 6px; flex-wrap: wrap;
+    align-items: center; justify-content: flex-end;
+  }
+  .sort-label { font-size: 12px; color: var(--text-tertiary); margin-right: 2px; white-space: nowrap; }
+  .sort-btn {
+    padding: 6px 14px; font-size: 12px; font-family: inherit;
+    font-weight: 500; border: 1.5px solid var(--border);
+    border-radius: 8px; cursor: pointer; background: var(--surface);
+    color: var(--text-secondary); transition: all 0.2s;
+  }
+  .sort-btn.active {
+    border-color: var(--accent); color: var(--accent);
+    background: var(--accent-light);
+  }
+
+  /* REGION TABLE */
+  .region-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+  }
+  .region-card {
+    background: var(--surface); border-radius: var(--radius);
+    padding: 20px; box-shadow: var(--shadow);
+    cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
+    border: 1.5px solid transparent;
+  }
+  .region-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
+  .region-card.selected { border-color: var(--accent); }
+  .region-name {
+    font-size: 15px; font-weight: 700; letter-spacing: -0.3px;
+    margin-bottom: 14px;
+  }
+  .region-metrics { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+  .metric { text-align: center; }
+  .metric-val {
+    font-size: 18px; font-weight: 700; letter-spacing: -0.5px;
+    line-height: 1;
+  }
+  .metric-lbl { font-size: 10px; color: var(--text-tertiary); margin-top: 3px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.04em; }
+  .metric.cars .metric-val { color: var(--accent); }
+  .metric.housing .metric-val { color: var(--accent-green); }
+  .metric.ratio .metric-val { color: var(--accent-orange); }
+
+  /* BAR in card */
+  .mini-bars { margin-top: 14px; display: flex; flex-direction: column; gap: 5px; }
+  .mini-bar-row { display: flex; align-items: center; gap: 8px; }
+  .mini-bar-label { font-size: 11px; color: var(--text-tertiary); width: 80px; flex-shrink: 0; text-align: right; }
+  .mini-bar-track { flex: 1; height: 5px; background: #f0f0f5; border-radius: 3px; overflow: hidden; }
+  .mini-bar-fill { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
+  .mini-bar-val { font-size: 11px; color: var(--text-secondary); width: 44px; text-align: right; flex-shrink: 0; }
+
+  /* DETAIL PANEL */
+  .detail-panel {
+    background: var(--surface); border-radius: var(--radius);
+    box-shadow: var(--shadow-hover); padding: 28px;
+    margin-bottom: 20px; display: none;
+    border: 1.5px solid var(--accent-light);
+  }
+  .detail-panel.open { display: block; animation: slideDown 0.25s ease; }
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .detail-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
+  .detail-title { font-size: 28px; font-weight: 700; letter-spacing: -0.8px; }
+  .detail-close {
+    width: 30px; height: 30px; border-radius: 50%; background: #f0f0f5;
+    border: none; cursor: pointer; font-size: 16px; display: flex;
+    align-items: center; justify-content: center; color: var(--text-secondary);
+  }
+  .detail-close:hover { background: #e0e0e5; }
+  .detail-stats { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; margin-bottom: 24px; }
+  .detail-stat {
+    background: var(--bg); border-radius: 12px; padding: 14px;
+  }
+  .detail-stat-val { font-size: 22px; font-weight: 700; letter-spacing: -0.6px; }
+  .detail-stat-lbl { font-size: 11px; color: var(--text-tertiary); font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 3px; }
+  .detail-chart-title { font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .housing-bars { display: flex; flex-direction: column; gap: 8px; }
+  .hbar-row { display: flex; align-items: center; gap: 10px; }
+  .hbar-lbl { font-size: 12px; color: var(--text-secondary); width: 110px; flex-shrink: 0; }
+  .hbar-track { flex: 1; height: 8px; background: #f0f0f5; border-radius: 4px; overflow: hidden; }
+  .hbar-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--accent), #5ac8fa); }
+  .hbar-val { font-size: 12px; color: var(--text-secondary); width: 60px; text-align: right; }
+
+  /* CONCLUSIONS */
+  .conclusions {
+    background: linear-gradient(135deg, #1d1d1f 0%, #2d2d2f 100%);
+    border-radius: var(--radius); padding: 40px;
+    color: white;
+  }
+  .conclusions h2 {
+    font-size: 26px; font-weight: 700; letter-spacing: -0.5px;
+    margin-bottom: 24px; color: white;
+  }
+  .conclusion-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+  .conclusion-item {
+    background: rgba(255,255,255,0.07); border-radius: 14px;
+    padding: 20px; border: 1px solid rgba(255,255,255,0.1);
+  }
+  .conclusion-icon { font-size: 28px; margin-bottom: 10px; }
+  .conclusion-item h3 { font-size: 15px; font-weight: 600; margin-bottom: 8px; color: white; }
+  .conclusion-item p { font-size: 13px; line-height: 1.6; color: rgba(255,255,255,0.65); }
+
+  /* CHART SECTION */
+  .chart-wrapper {
+    background: var(--surface); border-radius: var(--radius);
+    padding: 28px; box-shadow: var(--shadow);
+    overflow-x: auto;
+  }
+  .bar-chart { display: flex; flex-direction: column; gap: 8px; }
+  .bc-row { display: flex; align-items: center; gap: 12px; }
+  .bc-lbl { font-size: 12px; color: var(--text-secondary); width: 130px; flex-shrink: 0; text-align: right; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .bc-bar { height: 22px; border-radius: 5px; min-width: 4px; display: flex; align-items: center; padding: 0 8px; }
+  .bc-val { font-size: 11px; font-weight: 600; color: white; white-space: nowrap; }
+  .bc-val-outside { font-size: 11px; font-weight: 600; color: var(--text-secondary); margin-left: 8px; }
+
+  /* TOOLTIP */
+  .badge {
+    display: inline-block; padding: 2px 8px; border-radius: 6px;
+    font-size: 11px; font-weight: 600;
+  }
+  .badge-blue { background: var(--accent-light); color: var(--accent); }
+  .badge-green { background: #e9f9ef; color: var(--accent-green); }
+  .badge-orange { background: #fff5e0; color: var(--accent-orange); }
+
+  /* FOOTER */
+  /* BACK TO TOP */
+  .back-to-top {
+    position: fixed; bottom: 28px; right: 24px; z-index: 200;
+    width: 44px; height: 44px; border-radius: 50%;
+    background: var(--text-primary); color: white;
+    border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    opacity: 0; pointer-events: none;
+    transform: translateY(10px);
+    transition: opacity 0.25s, transform 0.25s;
+  }
+  .back-to-top.visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
+  .back-to-top:hover { background: #3a3a3c; }
+
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 30px 24px; text-align: center;
+    color: var(--text-tertiary); font-size: 12px;
+    max-width: 980px; margin: 0 auto;
+  }
+  footer a { color: var(--accent); text-decoration: none; }
+
+  .nav-menu-btn {
+    display: none;
+    background: none; border: none; cursor: pointer;
+    padding: 6px; border-radius: 8px;
+    color: var(--text-primary);
+    transition: background 0.2s;
+  }
+  .nav-menu-btn:hover { background: rgba(0,0,0,0.06); }
+
+  .lang-btn {
+    padding: 5px 12px; font-family: inherit; font-size: 12px; font-weight: 600;
+    border: 1.5px solid var(--border); border-radius: 8px; cursor: pointer;
+    background: var(--surface); color: var(--text-secondary);
+    transition: all 0.2s; letter-spacing: 0.02em; flex-shrink: 0;
+  }
+  .lang-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  @media (max-width: 600px) {
+    nav { height: auto; flex-wrap: wrap; padding: 10px 16px; gap: 0; position: relative; }
+    nav > div { flex-wrap: wrap; gap: 8px; }
+    .nav-menu-btn { display: flex; align-items: center; justify-content: center; }
+    .nav-links {
+      display: none; flex-direction: column; gap: 4px;
+      width: 100%; padding: 10px 0 4px;
+      border-top: 1px solid var(--border); margin-top: 8px;
+      order: 10;
+    }
+    .nav-links.open { display: flex; }
+    .nav-links a {
+      font-size: 14px; padding: 10px 12px;
+      border-radius: 10px; background: rgba(0,0,0,0.03);
+      font-weight: 500;
+    }
+    .nav-links a:hover { background: rgba(0,0,0,0.07); }
+    .region-metrics { grid-template-columns: 1fr 1fr; }
+    .hero h1 { font-size: 32px; }
+    .hero p { font-size: 16px; }
+    .stats-strip { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-brand" href="#" id="navBrand">🇧🇬 България в числа</a>
+  <div style="display:flex;align-items:center;gap:20px;">
+    <div class="nav-links" id="navLinks">
+      <a href="#overview" onclick="closeNav()" data-i18n="nav_overview">Преглед</a>
+      <a href="#regions" onclick="closeNav()" data-i18n="nav_regions">Области</a>
+      <a href="#housing-details" onclick="closeNav()" data-i18n="nav_housing">Жилища</a>
+      <a href="#vehicles" onclick="closeNav()" data-i18n="nav_vehicles">МПС детайли</a>
+      <a href="#charts" onclick="closeNav()" data-i18n="nav_charts">Анализ</a>
+      <a href="#conclusions" onclick="closeNav()" data-i18n="nav_conclusions">Заключения</a>
+    </div>
+    <button class="lang-btn" id="langBtn" onclick="toggleLang()">EN</button>
+    <button class="nav-menu-btn" id="navMenuBtn" aria-label="Меню" onclick="toggleNav()">
+      <svg id="navIcon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+  </div>
+</nav>
+
+<div class="hero" id="overview">
+  <div class="hero-label">Данни към 2025–2026 г.</div>
+  <h1>България<br>в числа</h1>
+  <p>Интерактивен анализ на население, регистрирани автомобили и жилища по области</p>
+</div>
+
+<div class="stats-strip" id="national-stats">
+  <!-- filled by JS -->
+</div>
+
+<!-- SEARCH + TABS -->
+<div class="search-wrap" id="regions">
+  <svg class="search-icon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+  <input class="search-input" id="searchInput" type="text" placeholder="Търси област…">
+</div>
+
+
+<div class="section">
+  <div class="section-header">
+    <span class="section-title" id="sectionTitle">28 области</span>
+    <div class="sort-bar">
+      <span class="sort-label">Сортирай:</span>
+      <button class="sort-btn" data-sort="alpha">А–Я</button>
+      <button class="sort-btn active" data-sort="pop">Население</button>
+      <button class="sort-btn" data-sort="cars">Автомобили</button>
+      <button class="sort-btn" data-sort="housing">Жилища</button>
+    </div>
+  </div>
+
+  <div class="detail-panel" id="detailPanel"></div>
+  <div class="region-grid" id="regionGrid"></div>
+</div>
+
+<!-- HOUSING DETAILS -->
+<div class="section" id="housing-details">
+  <div class="section-header">
+    <span class="section-title" id="housingSecTitle">Детайли за жилища</span>
+  </div>
+
+  <!-- SUB-TABS -->
+  <div style="display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap;">
+    <button class="sort-btn active" id="hTab1" onclick="showHTab('overview')">Национален преглед</button>
+    <button class="sort-btn" id="hTab2" onclick="showHTab('regions')">По области</button>
+    <button class="sort-btn" id="hTab3" onclick="showHTab('rooms')">Структура по стаи</button>
+  </div>
+
+  <!-- OVERVIEW -->
+  <div id="hPanelOverview" class="chart-wrapper">
+    <div id="housingOverview"></div>
+  </div>
+
+  <!-- REGIONS -->
+  <div id="hPanelRegions" class="chart-wrapper" style="display:none">
+    <div style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;align-items:center;">
+      <span class="sort-label" id="hSortLabel">Сортирай:</span>
+      <button class="sort-btn active" id="hSort1" onclick="sortHousing('total')">Общо</button>
+      <button class="sort-btn" id="hSort2" onclick="sortHousing('urban')">В градовете</button>
+      <button class="sort-btn" id="hSort3" onclick="sortHousing('rural')">В селата</button>
+      <button class="sort-btn" id="hSort4" onclick="sortHousing('dwell_per_person')">На човек</button>
+    </div>
+    <div id="housingRegions"></div>
+  </div>
+
+  <!-- ROOMS -->
+  <div id="hPanelRooms" class="chart-wrapper" style="display:none">
+    <div id="housingRooms"></div>
+  </div>
+</div>
+
+<!-- VEHICLE DETAILS -->
+<div class="section" id="vehicles">
+  <div class="section-header">
+    <span class="section-title">Детайли за МПС</span>
+  </div>
+
+  <!-- SUB-TABS -->
+  <div style="display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap;">
+    <button class="sort-btn active" id="vTab1" onclick="showVTab('categories')">Категории</button>
+    <button class="sort-btn" id="vTab2" onclick="showVTab('brands')">Марки (леки авт.)</button>
+    <button class="sort-btn" id="vTab3" onclick="showVTab('age')">Възраст на автопарка</button>
+  </div>
+
+  <!-- CATEGORIES -->
+  <div id="vPanelCategories" class="chart-wrapper">
+    <div id="catChart"></div>
+  </div>
+
+  <!-- BRANDS -->
+  <div id="vPanelBrands" class="chart-wrapper" style="display:none">
+    <div style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;align-items:center;">
+      <span class="sort-label" id="bSortLabel">Сортирай:</span>
+      <button class="sort-btn active" id="bSort1" onclick="sortBrands('total')">Общо</button>
+      <button class="sort-btn" id="bSort2" onclick="sortBrands('age_0_5')">0–5 год.</button>
+      <button class="sort-btn" id="bSort3" onclick="sortBrands('age_6_10')">6–10 год.</button>
+      <button class="sort-btn" id="bSort4" onclick="sortBrands('age_11_15')">11–15 год.</button>
+      <button class="sort-btn" id="bSort5" onclick="sortBrands('age_15_20')">15–20 год.</button>
+      <button class="sort-btn" id="bSort6" onclick="sortBrands('age_20plus')">над 20 год.</button>
+    </div>
+    <div id="brandsTable"></div>
+  </div>
+
+  <!-- AGE -->
+  <div id="vPanelAge" class="chart-wrapper" style="display:none">
+    <div id="ageChart"></div>
+  </div>
+</div>
+
+<!-- CHARTS -->
+<div class="section" id="charts">
+  <div class="section-header">
+    <span class="section-title">Сравнителен анализ</span>
+  </div>
+  <div class="chart-wrapper" id="chartWrap">
+    <div style="display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap;">
+      <button class="sort-btn active" id="cBtn1" onclick="renderChart('cars_per_100')">Автомобили на 100 души</button>
+      <button class="sort-btn" id="cBtn2" onclick="renderChart('cars_per_dwelling')">Авт. на жилище</button>
+      <button class="sort-btn" id="cBtn3" onclick="renderChart('dwellings_per_person')">Жилища на човек</button>
+      <button class="sort-btn" id="cBtn4" onclick="renderChart('pop_permanent')">Нас. постоянен</button>
+      <button class="sort-btn" id="cBtn5" onclick="renderChart('pop_current')">Нас. настоящ</button>
+    </div>
+    <div class="bar-chart" id="barChart"></div>
+  </div>
+</div>
+
+<!-- CONCLUSIONS -->
+<div class="section" id="conclusions">
+  <div class="conclusions" id="conclusionsBox"></div>
+</div>
+
+<button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Към началото">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+</button>
+
+<footer>
+  <p>Данни: <a href="https://data.egov.bg" target="_blank">data.egov.bg</a> · НСИ · МВР · Последна актуализация: януари–март 2026 г.</p>
+  <p style="margin-top:8px">Визуализация само за информационни цели</p>
+</footer>
+
+<script>
+function toggleNav() {
+  const links = document.getElementById('navLinks');
+  links.classList.toggle('open');
+}
+function closeNav() {
+  document.getElementById('navLinks').classList.remove('open');
+}
+
+// ── I18N ─────────────────────────────────────────────────────────
+let lang = 'bg';
+
+const T = {
+  bg: {
+    nav_overview: 'Преглед', nav_regions: 'Области', nav_vehicles: 'МПС детайли',
+    nav_housing: 'Жилища', nav_charts: 'Анализ', nav_conclusions: 'Заключения',
+    brand: '🇧🇬 България в числа',
+    hero_label: 'Данни към 2025–2026 г.',
+    hero_title: 'България<br>в числа',
+    hero_sub: 'Интерактивен анализ на население, регистрирани автомобили и жилища по области',
+    stat_pop_perm: 'Население (постоянен адрес)', stat_pop_curr: 'Население (настоящ адрес)',
+    stat_cars: 'Леки автомобили', stat_housing: 'Жилища в страната',
+    stat_cars100: 'Авт. на 100 души (ср.)', stat_cars_dwell: 'Авт. на жилище (ср.)',
+    stat_dwell_pers: 'Жилища на човек (ср.)',
+    stat_cars_family: 'Авт. на семейство (~3 д.)',
+    stat_dwell_family: 'Жилища на семейство (~3–4 д.)',
+    section_regions: 'области', sort_label: 'Сортирай:',
+    sort_alpha: 'А–Я', sort_pop: 'Население', sort_cars: 'Автомобили', sort_housing: 'Жилища',
+    search_ph: 'Търси област…',
+    metric_perm: 'Постоянен адрес', metric_curr: 'Настоящ адрес',
+    metric_cars: 'Автомобили', metric_housing: 'Жилища',
+    minibar_cars: 'Авт./100 д.', minibar_dwell: 'Жил./човек',
+    detail_perm: 'Постоянен адрес', detail_curr: 'Настоящ адрес',
+    detail_cars: 'Леки автомобили', detail_housing: 'Жилища общо',
+    detail_c100: 'Авт. на 100 души', detail_cdwell: 'Авт. на жилище',
+    detail_dperson: 'Жилища на човек',
+    detail_cfamily: 'Авт. на семейство (~3 д.)',
+    detail_dfamily: 'Жилища на семейство (~3–4 д.)',
+    detail_diff: 'Разлика адреси (по регистрация)',
+    detail_diff_less: 'реално по-малко', detail_diff_more: 'реално повече',
+    housing_title: 'Структура на жилищния фонд',
+    housing_note: '(данни от НСИ към 31.12.2024)',
+    room1: 'Едностайни', room2: 'Двустайни', room3: 'Тристайни',
+    room4: 'Четиристайни', room5: 'Петстайни', room6: '6+ стаи',
+    section_vehicles: 'Детайли за МПС',
+    section_housing: 'Детайли за жилища',
+    htab_overview: 'Национален преглед', htab_regions: 'По области', htab_rooms: 'Структура по стаи',
+    hsort_total: 'Общо', hsort_urban: 'В градовете', hsort_rural: 'В селата', hsort_dpp: 'На човек',
+    housing_urban: 'В градовете', housing_rural: 'В селата',
+    housing_urban_pct: '% в градовете', housing_rural_pct: '% в селата',
+    housing_overview_title: 'Жилища в България — национален преглед',
+    housing_regions_title: 'Жилища по области',
+    housing_rooms_title: 'Структура по брой стаи — национално',
+    housing_total_lbl: 'Общо жилища', housing_dpp_lbl: 'На човек',
+    vtab_cat: 'Категории', vtab_brands: 'Марки (леки авт.)', vtab_age: 'Възраст на автопарка',
+    bsort_label: 'Сортирай:', bsort_total: 'Общо',
+    cat_header: 'Регистрирани МПС по категория',
+    brands_prefix: 'Леки автомобили (кат. M1 ≡ кат. B) — сортирано по:',
+    age_header: 'Структура на автопарка по възраст — леки автомобили (кат. M1 ≡ кат. B)',
+    age_insight_title: 'Ключов извод',
+    age_insight: '<strong style="color:#ff3b30">55.6%</strong> от леките автомобили в България са на <strong>над 20 години</strong>. Едва <strong style="color:#34c759">5.8%</strong> са до 5 години — един от най-застарели автопаркове в ЕС. Средната възраст надхвърля <strong>17 години</strong>.',
+    section_charts: 'Сравнителен анализ',
+    cbtn1: 'Автомобили на 100 души', cbtn2: 'Авт. на жилище', cbtn3: 'Жилища на човек',
+    cbtn4: 'Нас. постоянен', cbtn5: 'Нас. настоящ',
+    chart_cars100: 'Автомобили на 100 души', chart_carsdwell: 'Автомобили на жилище',
+    chart_dwellpers: 'Жилища на човек', chart_popperm: 'Население (постоянен адрес)',
+    chart_popcurr: 'Население (настоящ адрес)',
+    conclusions_title: 'Ключови заключения',
+    footer1: 'Данни:', footer2: 'Последна актуализация: януари–март 2026 г.',
+    footer3: 'Визуализация само за информационни цели',
+    back_top: 'Към началото',
+    region_prefix: 'Област',
+    col_label: {total:'Общо', age_0_5:'0–5 год.', age_6_10:'6–10 год.', age_11_15:'11–15 год.', age_15_20:'15–20 год.', age_20plus:'над 20 год.'},
+  },
+  en: {
+    nav_overview: 'Overview', nav_regions: 'Regions', nav_vehicles: 'Vehicle Details',
+    nav_housing: 'Housing', nav_charts: 'Analysis', nav_conclusions: 'Conclusions',
+    brand: '🇧🇬 Bulgaria in Numbers',
+    hero_label: 'Data as of 2025–2026',
+    hero_title: 'Bulgaria<br>in Numbers',
+    hero_sub: 'Interactive analysis of population, registered vehicles and housing by region',
+    stat_pop_perm: 'Population (permanent address)', stat_pop_curr: 'Population (current address)',
+    stat_cars: 'Passenger cars', stat_housing: 'Dwellings nationwide',
+    stat_cars100: 'Cars per 100 people (avg.)', stat_cars_dwell: 'Cars per dwelling (avg.)',
+    stat_dwell_pers: 'Dwellings per person (avg.)',
+    stat_cars_family: 'Cars per family (~3 people)',
+    stat_dwell_family: 'Dwellings per family (~3–4 people)',
+    section_regions: 'regions', sort_label: 'Sort by:',
+    sort_alpha: 'A–Z', sort_pop: 'Population', sort_cars: 'Vehicles', sort_housing: 'Housing',
+    search_ph: 'Search region…',
+    metric_perm: 'Permanent address', metric_curr: 'Current address',
+    metric_cars: 'Vehicles', metric_housing: 'Dwellings',
+    minibar_cars: 'Cars/100p.', minibar_dwell: 'Dwell./person',
+    detail_perm: 'Permanent address', detail_curr: 'Current address',
+    detail_cars: 'Passenger cars', detail_housing: 'Total dwellings',
+    detail_c100: 'Cars per 100 people', detail_cdwell: 'Cars per dwelling',
+    detail_dperson: 'Dwellings per person',
+    detail_cfamily: 'Cars per family (~3 people)',
+    detail_dfamily: 'Dwellings per family (~3–4 people)',
+    detail_diff: 'Address difference (by registration)',
+    detail_diff_less: 'fewer residents', detail_diff_more: 'more residents',
+    housing_title: 'Housing stock structure',
+    housing_note: '(NSI data as of 31.12.2024)',
+    room1: '1-room', room2: '2-room', room3: '3-room',
+    room4: '4-room', room5: '5-room', room6: '6+ rooms',
+    section_vehicles: 'Vehicle Details',
+    section_housing: 'Housing Details',
+    htab_overview: 'National overview', htab_regions: 'By region', htab_rooms: 'Room structure',
+    hsort_total: 'Total', hsort_urban: 'Urban', hsort_rural: 'Rural', hsort_dpp: 'Per person',
+    housing_urban: 'Urban', housing_rural: 'Rural',
+    housing_urban_pct: '% urban', housing_rural_pct: '% rural',
+    housing_overview_title: 'Housing in Bulgaria — national overview',
+    housing_regions_title: 'Dwellings by region',
+    housing_rooms_title: 'Room structure — national',
+    housing_total_lbl: 'Total dwellings', housing_dpp_lbl: 'Per person',
+    vtab_cat: 'Categories', vtab_brands: 'Brands (passenger cars)', vtab_age: 'Fleet age',
+    bsort_label: 'Sort by:', bsort_total: 'Total',
+    cat_header: 'Registered vehicles by category',
+    brands_prefix: 'Passenger cars (cat. M1 = cat. B licence) — sorted by:',
+    age_header: 'Fleet age structure — passenger cars (cat. M1 = cat. B licence)',
+    age_insight_title: 'Key finding',
+    age_insight: '<strong style="color:#ff3b30">55.6%</strong> of passenger cars in Bulgaria are <strong>over 20 years old</strong>. Only <strong style="color:#34c759">5.8%</strong> are under 5 years — one of the oldest vehicle fleets in the EU. Average age exceeds <strong>17 years</strong>.',
+    section_charts: 'Comparative Analysis',
+    cbtn1: 'Cars per 100 people', cbtn2: 'Cars per dwelling', cbtn3: 'Dwellings per person',
+    cbtn4: 'Pop. permanent', cbtn5: 'Pop. current',
+    chart_cars100: 'Cars per 100 people', chart_carsdwell: 'Cars per dwelling',
+    chart_dwellpers: 'Dwellings per person', chart_popperm: 'Population (permanent address)',
+    chart_popcurr: 'Population (current address)',
+    conclusions_title: 'Key Conclusions',
+    footer1: 'Data:', footer2: 'Last updated: January–March 2026.',
+    footer3: 'Visualisation for informational purposes only',
+    back_top: 'Back to top',
+    region_prefix: 'Region',
+    col_label: {total:'Total', age_0_5:'0–5 yrs', age_6_10:'6–10 yrs', age_11_15:'11–15 yrs', age_15_20:'15–20 yrs', age_20plus:'20+ yrs'},
+  }
+};
+
+const NICE_EN = {
+  'БЛАГОЕВГРАД':'Blagoevgrad','БУРГАС':'Burgas','ВАРНА':'Varna','ВЕЛИКО ТЪРНОВО':'Veliko Tarnovo',
+  'ВИДИН':'Vidin','ВРАЦА':'Vratsa','ГАБРОВО':'Gabrovo','ДОБРИЧ':'Dobrich',
+  'КЪРДЖАЛИ':'Kardzhali','КЮСТЕНДИЛ':'Kyustendil','ЛОВЕЧ':'Lovech','МОНТАНА':'Montana',
+  'ПАЗАРДЖИК':'Pazardzhik','ПЕРНИК':'Pernik','ПЛЕВЕН':'Pleven','ПЛОВДИВ':'Plovdiv',
+  'РАЗГРАД':'Razgrad','РУСЕ':'Ruse','СИЛИСТРА':'Silistra','СЛИВЕН':'Sliven',
+  'СМОЛЯН':'Smolyan','СОФИЙСКА':'Sofia Region','СОФИЯ':'Sofia City',
+  'СТАРА ЗАГОРА':'Stara Zagora','ТЪРГОВИЩЕ':'Targovishte','ХАСКОВО':'Haskovo',
+  'ШУМЕН':'Shumen','ЯМБОЛ':'Yambol'
+};
+
+function t(key) { return T[lang][key] || key; }
+function regionName(r) { return lang==='bg' ? NICE[r] : NICE_EN[r]; }
+
+function toggleLang() {
+  lang = lang==='bg' ? 'en' : 'bg';
+  document.getElementById('langBtn').textContent = lang==='bg' ? 'EN' : 'БГ';
+  applyLang();
+}
+
+function applyLang() {
+  // Nav brand
+  document.getElementById('navBrand').innerHTML = t('brand');
+  // Nav links
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    el.textContent = t(el.dataset.i18n);
+  });
+  // Hero
+  document.querySelector('.hero-label').textContent = t('hero_label');
+  document.querySelector('.hero h1').innerHTML = t('hero_title');
+  document.querySelector('.hero p').textContent = t('hero_sub');
+  // Search placeholder
+  document.getElementById('searchInput').placeholder = t('search_ph');
+  // Sort buttons
+  document.querySelector('[data-sort="alpha"]').textContent = t('sort_alpha');
+  document.querySelector('[data-sort="pop"]').textContent = t('sort_pop');
+  document.querySelector('[data-sort="cars"]').textContent = t('sort_cars');
+  document.querySelector('[data-sort="housing"]').textContent = t('sort_housing');
+  document.querySelector('.sort-label').textContent = t('sort_label');
+  // Section titles
+  document.getElementById('sectionTitle').textContent = (selectedRegion ? 1 : RAW.length) + ' ' + t('section_regions');
+  document.getElementById('housingSecTitle').textContent = t('section_housing');
+  document.querySelector('#vehicles .section-title').textContent = t('section_vehicles');
+  document.querySelector('#charts .section-title').textContent = t('section_charts');
+  // Housing tabs
+  document.getElementById('hTab1').textContent = t('htab_overview');
+  document.getElementById('hTab2').textContent = t('htab_regions');
+  document.getElementById('hTab3').textContent = t('htab_rooms');
+  document.getElementById('hSort1').textContent = t('hsort_total');
+  document.getElementById('hSort2').textContent = t('hsort_urban');
+  document.getElementById('hSort3').textContent = t('hsort_rural');
+  document.getElementById('hSort4').textContent = t('hsort_dpp');
+  if(currentHTab==='overview') renderHousingOverview();
+  else if(currentHTab==='regions') renderHousingRegions(currentHSort);
+  else renderHousingRooms();
+  // Vehicle tabs
+  document.getElementById('vTab1').textContent = t('vtab_cat');
+  document.getElementById('vTab2').textContent = t('vtab_brands');
+  document.getElementById('vTab3').textContent = t('vtab_age');
+  // Brands sort buttons
+  const cl = t('col_label');
+  document.getElementById('bSort1').textContent = cl.total;
+  document.getElementById('bSort2').textContent = cl.age_0_5;
+  document.getElementById('bSort3').textContent = cl.age_6_10;
+  document.getElementById('bSort4').textContent = cl.age_11_15;
+  document.getElementById('bSort5').textContent = cl.age_15_20;
+  document.getElementById('bSort6').textContent = cl.age_20plus;
+  document.getElementById('bSortLabel').textContent = t('bsort_label');
+  // Chart buttons
+  document.getElementById('cBtn1').textContent = t('cbtn1');
+  document.getElementById('cBtn2').textContent = t('cbtn2');
+  document.getElementById('cBtn3').textContent = t('cbtn3');
+  document.getElementById('cBtn4').textContent = t('cbtn4');
+  document.getElementById('cBtn5').textContent = t('cbtn5');
+  // Footer
+  document.querySelector('footer').innerHTML = `
+    <p>${t('footer1')} <a href="https://data.egov.bg" target="_blank">data.egov.bg</a> · NSI/НСИ · MVR/МВР · ${t('footer2')}</p>
+    <p style="margin-top:8px">${t('footer3')}</p>
+    <p style="margin-top:8px">Built with <a href="https://www.anthropic.com/claude" target="_blank">Claude Sonnet 4.6</a> by Anthropic</p>`;
+  // National stats
+  renderNationalStats();
+  // Re-render cards & active panels
+  renderCards();
+  if(selectedRegion) showDetail(selectedRegion, true);
+  if(currentVTab==='categories') renderCategories();
+  else if(currentVTab==='brands') renderBrandsTable(currentBSort);
+  else if(currentVTab==='age') renderAgeChart();
+  renderChart(currentChartKey);
+  renderConclusions();
+}
+// ── END I18N ──────────────────────────────────────────────────────
+
+const RAW = [{"region":"БЛАГОЕВГРАД","pop_permanent":387211,"pop_current":312557,"cars_m1":139585,"housing_total":165917,"housing_one_room":9686,"housing_two_room":34758,"housing_three_room":53631,"housing_four_room":37399,"housing_five_room":14619,"housing_six_plus":15824,"cars_per_100":36.0,"cars_per_dwelling":0.84,"dwellings_per_person":0.428},{"region":"БУРГАС","pop_permanent":448589,"pop_current":426616,"cars_m1":182272,"housing_total":334510,"housing_one_room":32561,"housing_two_room":129310,"housing_three_room":106355,"housing_four_room":41237,"housing_five_room":12005,"housing_six_plus":13042,"cars_per_100":40.6,"cars_per_dwelling":0.54,"dwellings_per_person":0.746},{"region":"ВАРНА","pop_permanent":504771,"pop_current":487976,"cars_m1":218976,"housing_total":289066,"housing_one_room":19454,"housing_two_room":101806,"housing_three_room":103269,"housing_four_room":43215,"housing_five_room":11209,"housing_six_plus":10113,"cars_per_100":43.4,"cars_per_dwelling":0.76,"dwellings_per_person":0.573},{"region":"ВЕЛИКО ТЪРНОВО","pop_permanent":241668,"pop_current":235643,"cars_m1":95004,"housing_total":146785,"housing_one_room":6757,"housing_two_room":33894,"housing_three_room":54147,"housing_four_room":35216,"housing_five_room":11269,"housing_six_plus":5502,"cars_per_100":39.3,"cars_per_dwelling":0.65,"dwellings_per_person":0.607},{"region":"ВИДИН","pop_permanent":93364,"pop_current":86429,"cars_m1":39410,"housing_total":74087,"housing_one_room":4329,"housing_two_room":18216,"housing_three_room":25235,"housing_four_room":16174,"housing_five_room":5056,"housing_six_plus":5077,"cars_per_100":42.2,"cars_per_dwelling":0.53,"dwellings_per_person":0.794},{"region":"ВРАЦА","pop_permanent":176288,"pop_current":167941,"cars_m1":72908,"housing_total":116612,"housing_one_room":10632,"housing_two_room":35683,"housing_three_room":39473,"housing_four_room":19530,"housing_five_room":6475,"housing_six_plus":4819,"cars_per_100":41.4,"cars_per_dwelling":0.63,"dwellings_per_person":0.661},{"region":"ГАБРОВО","pop_permanent":117228,"pop_current":111057,"cars_m1":51471,"housing_total":78620,"housing_one_room":3845,"housing_two_room":19525,"housing_three_room":27552,"housing_four_room":18337,"housing_five_room":5963,"housing_six_plus":3398,"cars_per_100":43.9,"cars_per_dwelling":0.65,"dwellings_per_person":0.671},{"region":"ДОБРИЧ","pop_permanent":212711,"pop_current":182297,"cars_m1":72880,"housing_total":104130,"housing_one_room":6717,"housing_two_room":30324,"housing_three_room":40029,"housing_four_room":19134,"housing_five_room":4560,"housing_six_plus":3366,"cars_per_100":34.3,"cars_per_dwelling":0.7,"dwellings_per_person":0.49},{"region":"КЪРДЖАЛИ","pop_permanent":346971,"pop_current":192688,"cars_m1":57967,"housing_total":83525,"housing_one_room":1870,"housing_two_room":18341,"housing_three_room":25146,"housing_four_room":21152,"housing_five_room":5236,"housing_six_plus":11780,"cars_per_100":16.7,"cars_per_dwelling":0.69,"dwellings_per_person":0.241},{"region":"КЮСТЕНДИЛ","pop_permanent":146898,"pop_current":124368,"cars_m1":61646,"housing_total":92043,"housing_one_room":4133,"housing_two_room":25977,"housing_three_room":31641,"housing_four_room":18425,"housing_five_room":6068,"housing_six_plus":5799,"cars_per_100":42.0,"cars_per_dwelling":0.67,"dwellings_per_person":0.627},{"region":"ЛОВЕЧ","pop_permanent":135235,"pop_current":127351,"cars_m1":56491,"housing_total":92485,"housing_one_room":2977,"housing_two_room":19437,"housing_three_room":31828,"housing_four_room":23273,"housing_five_room":8578,"housing_six_plus":6392,"cars_per_100":41.8,"cars_per_dwelling":0.61,"dwellings_per_person":0.684},{"region":"МОНТАНА","pop_permanent":137163,"pop_current":130078,"cars_m1":53083,"housing_total":92748,"housing_one_room":4684,"housing_two_room":23622,"housing_three_room":32855,"housing_four_room":19806,"housing_five_room":6998,"housing_six_plus":4783,"cars_per_100":38.7,"cars_per_dwelling":0.57,"dwellings_per_person":0.676},{"region":"ПАЗАРДЖИК","pop_permanent":284659,"pop_current":269847,"cars_m1":109185,"housing_total":135465,"housing_one_room":4158,"housing_two_room":31345,"housing_three_room":46576,"housing_four_room":31139,"housing_five_room":10318,"housing_six_plus":11929,"cars_per_100":38.4,"cars_per_dwelling":0.81,"dwellings_per_person":0.476},{"region":"ПЕРНИК","pop_permanent":121175,"pop_current":119974,"cars_m1":61980,"housing_total":100719,"housing_one_room":6932,"housing_two_room":36714,"housing_three_room":31493,"housing_four_room":15850,"housing_five_room":4889,"housing_six_plus":4841,"cars_per_100":51.2,"cars_per_dwelling":0.62,"dwellings_per_person":0.831},{"region":"ПЛЕВЕН","pop_permanent":270850,"pop_current":252522,"cars_m1":98441,"housing_total":144752,"housing_one_room":7706,"housing_two_room":39741,"housing_three_room":54010,"housing_four_room":28175,"housing_five_room":9288,"housing_six_plus":5832,"cars_per_100":36.4,"cars_per_dwelling":0.68,"dwellings_per_person":0.534},{"region":"ПЛОВДИВ","pop_permanent":729879,"pop_current":701572,"cars_m1":307461,"housing_total":362874,"housing_one_room":17222,"housing_two_room":100943,"housing_three_room":134675,"housing_four_room":68961,"housing_five_room":19572,"housing_six_plus":21501,"cars_per_100":42.1,"cars_per_dwelling":0.85,"dwellings_per_person":0.497},{"region":"РАЗГРАД","pop_permanent":164136,"pop_current":117770,"cars_m1":46888,"housing_total":59521,"housing_one_room":2046,"housing_two_room":13625,"housing_three_room":19011,"housing_four_room":13965,"housing_five_room":6241,"housing_six_plus":4633,"cars_per_100":28.6,"cars_per_dwelling":0.79,"dwellings_per_person":0.363},{"region":"РУСЕ","pop_permanent":236630,"pop_current":217676,"cars_m1":104418,"housing_total":124216,"housing_one_room":11959,"housing_two_room":38647,"housing_three_room":43207,"housing_four_room":19597,"housing_five_room":6803,"housing_six_plus":4003,"cars_per_100":44.1,"cars_per_dwelling":0.84,"dwellings_per_person":0.525},{"region":"СИЛИСТРА","pop_permanent":136202,"pop_current":116448,"cars_m1":43872,"housing_total":58285,"housing_one_room":3173,"housing_two_room":14111,"housing_three_room":19157,"housing_four_room":12408,"housing_five_room":5434,"housing_six_plus":4002,"cars_per_100":32.2,"cars_per_dwelling":0.75,"dwellings_per_person":0.428},{"region":"СЛИВЕН","pop_permanent":218590,"pop_current":192738,"cars_m1":72135,"housing_total":96879,"housing_one_room":4891,"housing_two_room":26183,"housing_three_room":33437,"housing_four_room":19527,"housing_five_room":7119,"housing_six_plus":5722,"cars_per_100":33.0,"cars_per_dwelling":0.74,"dwellings_per_person":0.443},{"region":"СМОЛЯН","pop_permanent":108642,"pop_current":100229,"cars_m1":44972,"housing_total":74372,"housing_one_room":3022,"housing_two_room":19745,"housing_three_room":27247,"housing_four_room":15596,"housing_five_room":3857,"housing_six_plus":4905,"cars_per_100":41.4,"cars_per_dwelling":0.6,"dwellings_per_person":0.685},{"region":"СОФИЙСКА","pop_permanent":227486,"pop_current":239932,"cars_m1":107362,"housing_total":178930,"housing_one_room":10079,"housing_two_room":51942,"housing_three_room":54507,"housing_four_room":35107,"housing_five_room":14204,"housing_six_plus":13091,"cars_per_100":47.2,"cars_per_dwelling":0.6,"dwellings_per_person":0.787},{"region":"СОФИЯ","pop_permanent":1524250,"pop_current":1392041,"cars_m1":730791,"housing_total":774748,"housing_one_room":71800,"housing_two_room":300168,"housing_three_room":276955,"housing_four_room":87357,"housing_five_room":21981,"housing_six_plus":16487,"cars_per_100":47.9,"cars_per_dwelling":0.94,"dwellings_per_person":0.508},{"region":"СТАРА ЗАГОРА","pop_permanent":344573,"pop_current":327083,"cars_m1":141491,"housing_total":186438,"housing_one_room":8412,"housing_two_room":52484,"housing_three_room":69043,"housing_four_room":39071,"housing_five_room":9418,"housing_six_plus":8010,"cars_per_100":41.1,"cars_per_dwelling":0.76,"dwellings_per_person":0.541},{"region":"ТЪРГОВИЩЕ","pop_permanent":144188,"pop_current":125769,"cars_m1":42392,"housing_total":65806,"housing_one_room":2118,"housing_two_room":15412,"housing_three_room":24474,"housing_four_room":15824,"housing_five_room":4950,"housing_six_plus":3028,"cars_per_100":29.4,"cars_per_dwelling":0.64,"dwellings_per_person":0.456},{"region":"ХАСКОВО","pop_permanent":274796,"pop_current":227195,"cars_m1":100413,"housing_total":129517,"housing_one_room":5297,"housing_two_room":29500,"housing_three_room":47816,"housing_four_room":28243,"housing_five_room":9394,"housing_six_plus":9267,"cars_per_100":36.5,"cars_per_dwelling":0.78,"dwellings_per_person":0.471},{"region":"ШУМЕН","pop_permanent":230837,"pop_current":190847,"cars_m1":68238,"housing_total":90001,"housing_one_room":5717,"housing_two_room":22819,"housing_three_room":30343,"housing_four_room":20439,"housing_five_room":6219,"housing_six_plus":4464,"cars_per_100":29.6,"cars_per_dwelling":0.76,"dwellings_per_person":0.39},{"region":"ЯМБОЛ","pop_permanent":127719,"pop_current":120924,"cars_m1":48210,"housing_total":71142,"housing_one_room":3759,"housing_two_room":22120,"housing_three_room":26212,"housing_four_room":11333,"housing_five_room":4057,"housing_six_plus":3661,"cars_per_100":37.7,"cars_per_dwelling":0.68,"dwellings_per_person":0.557}];
+
+// NICE NAMES
+const NICE = {'БЛАГОЕВГРАД':'Благоевград','БУРГАС':'Бургас','ВАРНА':'Варна','ВЕЛИКО ТЪРНОВО':'Велико Търново','ВИДИН':'Видин','ВРАЦА':'Враца','ГАБРОВО':'Габрово','ДОБРИЧ':'Добрич','КЪРДЖАЛИ':'Кърджали','КЮСТЕНДИЛ':'Кюстендил','ЛОВЕЧ':'Ловеч','МОНТАНА':'Монтана','ПАЗАРДЖИК':'Пазарджик','ПЕРНИК':'Перник','ПЛЕВЕН':'Плевен','ПЛОВДИВ':'Пловдив','РАЗГРАД':'Разград','РУСЕ':'Русе','СИЛИСТРА':'Силистра','СЛИВЕН':'Сливен','СМОЛЯН':'Смолян','СОФИЙСКА':'Софийска обл.','СОФИЯ':'София-град','СТАРА ЗАГОРА':'Стара Загора','ТЪРГОВИЩЕ':'Търговище','ХАСКОВО':'Хасково','ШУМЕН':'Шумен','ЯМБОЛ':'Ямбол'};
+
+let currentSort = 'pop';
+let currentTab = 'all';
+let selectedRegion = null;
+let currentChartKey = 'cars_per_100';
+
+// NATIONAL TOTALS
+const totalPop = RAW.reduce((s,r)=>s+r.pop_permanent,0);
+const totalCars = RAW.reduce((s,r)=>s+r.cars_m1,0);
+const totalHousing = RAW.reduce((s,r)=>s+r.housing_total,0);
+const avgCars100 = (totalCars/totalPop*100).toFixed(1);
+const avgDwellPerson = (totalHousing/totalPop).toFixed(3);
+const avgCarsPerDwell = (totalCars/totalHousing).toFixed(2);
+const FAMILY_SIZE = 3;          // ~3 души на семейство
+const FAMILY_SIZE_HOU = 3.5;    // ~3–4 души за жилищна единица
+const avgCarsPerFamily = (totalCars / (totalPop / FAMILY_SIZE)).toFixed(2);
+const avgDwellPerFamily = (totalHousing / (totalPop / FAMILY_SIZE_HOU)).toFixed(2);
+
+function fmt(n) {
+  if(lang==='en') {
+    if(n>=1000000) return (n/1000000).toFixed(2)+'M';
+    if(n>=1000) return (n/1000).toFixed(0)+' k';
+    return n;
+  }
+  if(n>=1000000) return (n/1000000).toFixed(2)+'М';
+  if(n>=1000) return (n/1000).toFixed(0)+' хил.';
+  return n;
+}
+
+const totalPopCurrent = RAW.reduce((s,r)=>s+r.pop_current,0);
+
+function renderNationalStats() {
+  const M = lang==='en' ? 'M' : 'М';
+  document.getElementById('national-stats').innerHTML = `
+    <div class="stat-card"><div class="stat-num">${(totalPop/1000000).toFixed(2)}<span>${M}</span></div><div class="stat-label">${t('stat_pop_perm')}</div></div>
+    <div class="stat-card"><div class="stat-num">${(totalPopCurrent/1000000).toFixed(2)}<span>${M}</span></div><div class="stat-label">${t('stat_pop_curr')}</div></div>
+    <div class="stat-card"><div class="stat-num">${(totalCars/1000000).toFixed(2)}<span>${M}</span></div><div class="stat-label">${t('stat_cars')} <span title="M1 category = cat. B driving licence">(cat. M1 ≡ cat. B)</span></div></div>
+    <div class="stat-card"><div class="stat-num">${(totalHousing/1000000).toFixed(2)}<span>${M}</span></div><div class="stat-label">${t('stat_housing')}</div></div>
+    <div class="stat-card"><div class="stat-num">${avgCars100}</div><div class="stat-label">${t('stat_cars100')}</div></div>
+    <div class="stat-card"><div class="stat-num">${avgCarsPerDwell}</div><div class="stat-label">${t('stat_cars_dwell')}</div></div>
+    <div class="stat-card"><div class="stat-num">${avgDwellPerson}</div><div class="stat-label">${t('stat_dwell_pers')}</div></div>
+    <div class="stat-card" style="border-top:2px solid var(--accent-orange)"><div class="stat-num" style="color:var(--accent-orange)">${avgCarsPerFamily}</div><div class="stat-label">${t('stat_cars_family')}</div></div>
+    <div class="stat-card" style="border-top:2px solid var(--accent-green)"><div class="stat-num" style="color:var(--accent-green)">${avgDwellPerFamily}</div><div class="stat-label">${t('stat_dwell_family')}</div></div>
+  `;
+}
+renderNationalStats();
+
+function getSorted(data) {
+  return [...data].sort((a,b)=>{
+    if(currentSort==='alpha') return a.region.localeCompare(b.region,'bg');
+    if(currentSort==='pop') return b.pop_permanent - a.pop_permanent;
+    if(currentSort==='cars') return b.cars_m1 - a.cars_m1;
+    if(currentSort==='housing') return b.housing_total - a.housing_total;
+    return 0;
+  });
+}
+
+function barColor(val, min, max) {
+  const t = (val-min)/(max-min);
+  if(t < 0.33) return '#34c759';
+  if(t < 0.66) return '#ff9f0a';
+  return '#ff3b30';
+}
+
+const maxCars100 = Math.max(...RAW.map(r=>r.cars_per_100));
+const maxCarsD = Math.max(...RAW.map(r=>r.cars_per_dwelling));
+const maxDwP = Math.max(...RAW.map(r=>r.dwellings_per_person));
+
+function renderCards() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  let data = RAW.filter(r => regionName(r.region).toLowerCase().includes(q) || NICE[r.region].toLowerCase().includes(q));
+  const sorted = getSorted(data);
+  document.getElementById('sectionTitle').textContent = sorted.length + ' ' + t('section_regions');
+
+  const grid = document.getElementById('regionGrid');
+  grid.innerHTML = sorted.map(r => {
+    const name = regionName(r.region);
+    const cColor = barColor(r.cars_per_100, 16, maxCars100);
+    const hColor = barColor(r.dwellings_per_person, 0.2, maxDwP);
+
+    return `<div class="region-card${selectedRegion===r.region?' selected':''}" onclick="showDetail('${r.region}')">
+      <div class="region-name">${name}</div>
+      <div class="region-metrics" style="grid-template-columns:1fr 1fr">
+        <div class="metric">
+          <div class="metric-val">${fmt(r.pop_permanent)}</div>
+          <div class="metric-lbl">${t('metric_perm')}</div>
+        </div>
+        <div class="metric" style="color:var(--accent-red)">
+          <div class="metric-val" style="color:var(--accent-red)">${fmt(r.pop_current)}</div>
+          <div class="metric-lbl">${t('metric_curr')}</div>
+        </div>
+        <div class="metric cars">
+          <div class="metric-val">${fmt(r.cars_m1)}</div>
+          <div class="metric-lbl">${t('metric_cars')}</div>
+        </div>
+        <div class="metric housing">
+          <div class="metric-val">${fmt(r.housing_total)}</div>
+          <div class="metric-lbl">${t('metric_housing')}</div>
+        </div>
+      </div>
+      <div class="mini-bars">
+        <div class="mini-bar-row">
+          <div class="mini-bar-label">${t('minibar_cars')}</div>
+          <div class="mini-bar-track"><div class="mini-bar-fill" style="width:${r.cars_per_100/maxCars100*100}%;background:${cColor}"></div></div>
+          <div class="mini-bar-val">${r.cars_per_100}</div>
+        </div>
+        <div class="mini-bar-row">
+          <div class="mini-bar-label">${t('minibar_dwell')}</div>
+          <div class="mini-bar-track"><div class="mini-bar-fill" style="width:${r.dwellings_per_person/maxDwP*100}%;background:${hColor}"></div></div>
+          <div class="mini-bar-val">${r.dwellings_per_person}</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function showDetail(region, noScroll) {
+  if(selectedRegion === region && !noScroll) {
+    selectedRegion = null;
+    document.getElementById('detailPanel').classList.remove('open');
+    renderCards();
+    return;
+  }
+  selectedRegion = region;
+  renderCards();
+  const r = RAW.find(x=>x.region===region);
+  const name = regionName(region);
+  const locStr = lang==='en' ? 'en-GB' : 'bg';
+
+  const maxH = Math.max(r.housing_one_room,r.housing_two_room,r.housing_three_room,r.housing_four_room,r.housing_five_room,r.housing_six_plus);
+  const rooms = [
+    [t('room1'),r.housing_one_room],
+    [t('room2'),r.housing_two_room],
+    [t('room3'),r.housing_three_room],
+    [t('room4'),r.housing_four_room],
+    [t('room5'),r.housing_five_room],
+    [t('room6'),r.housing_six_plus],
+  ];
+  const diffPop = r.pop_permanent - r.pop_current;
+  const diffLabel = diffPop > 0 ? `−${fmt(Math.abs(diffPop))} ${t('detail_diff_less')}` : `+${fmt(Math.abs(diffPop))} ${t('detail_diff_more')}`;
+
+  const panel = document.getElementById('detailPanel');
+  panel.innerHTML = `
+    <div class="detail-top">
+      <div class="detail-title">${t('region_prefix')} ${name}</div>
+      <button class="detail-close" onclick="showDetail('${region}')">✕</button>
+    </div>
+    <div class="detail-stats">
+      <div class="detail-stat"><div class="detail-stat-val" style="color:var(--text-primary)">${r.pop_permanent.toLocaleString(locStr)}</div><div class="detail-stat-lbl">${t('detail_perm')}</div></div>
+      <div class="detail-stat"><div class="detail-stat-val" style="color:var(--accent)">${r.pop_current.toLocaleString(locStr)}</div><div class="detail-stat-lbl">${t('detail_curr')}</div></div>
+      <div class="detail-stat"><div class="detail-stat-val" style="color:var(--accent)">${r.cars_m1.toLocaleString(locStr)}</div><div class="detail-stat-lbl">${t('detail_cars')}</div></div>
+      <div class="detail-stat"><div class="detail-stat-val" style="color:var(--accent-green)">${r.housing_total.toLocaleString(locStr)}</div><div class="detail-stat-lbl">${t('detail_housing')}</div></div>
+      <div class="detail-stat"><div class="detail-stat-val" style="color:var(--accent-orange)">${r.cars_per_100}</div><div class="detail-stat-lbl">${t('detail_c100')}</div></div>
+      <div class="detail-stat"><div class="detail-stat-val" style="color:var(--accent-orange)">${r.cars_per_dwelling}</div><div class="detail-stat-lbl">${t('detail_cdwell')}</div></div>
+      <div class="detail-stat"><div class="detail-stat-val" style="color:var(--accent-green)">${r.dwellings_per_person}</div><div class="detail-stat-lbl">${t('detail_dperson')}</div></div>
+      <div class="detail-stat"><div class="detail-stat-val" style="color:var(--accent-orange)">${(r.cars_m1/(r.pop_permanent/FAMILY_SIZE)).toFixed(2)}</div><div class="detail-stat-lbl">${t('detail_cfamily')}</div></div>
+      <div class="detail-stat"><div class="detail-stat-val" style="color:var(--accent-green)">${(r.housing_total/(r.pop_permanent/FAMILY_SIZE_HOU)).toFixed(2)}</div><div class="detail-stat-lbl">${t('detail_dfamily')}</div></div>
+      <div class="detail-stat"><div class="detail-stat-val" style="color:${diffPop>0?'var(--accent-red)':'var(--accent-green)'}">${diffLabel}</div><div class="detail-stat-lbl">${t('detail_diff')}</div></div>
+    </div>
+    <div class="detail-chart-title">${t('housing_title')} <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text-tertiary)">${t('housing_note')}</span></div>
+    <div class="housing-bars">
+      ${rooms.map(([lbl,val])=>`
+      <div class="hbar-row">
+        <div class="hbar-lbl">${lbl}</div>
+        <div class="hbar-track"><div class="hbar-fill" style="width:${val/maxH*100}%"></div></div>
+        <div class="hbar-val">${val.toLocaleString(locStr)}</div>
+      </div>`).join('')}
+    </div>
+  `;
+  panel.classList.add('open');
+  if(!noScroll) panel.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+
+// SORT
+document.querySelectorAll('.sort-btn[data-sort]').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.sort-btn[data-sort]').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    currentSort = btn.dataset.sort;
+    selectedRegion = null;
+    document.getElementById('detailPanel').classList.remove('open');
+    renderCards();
+  });
+});
+
+// SEARCH
+document.getElementById('searchInput').addEventListener('input', () => {
+  selectedRegion = null;
+  document.getElementById('detailPanel').classList.remove('open');
+  renderCards();
+});
+
+// CHART
+const chartDefs = {
+  cars_per_100:      {color:'#0071e3', fmt:v=>v.toFixed(1)},
+  cars_per_dwelling: {color:'#ff9f0a', fmt:v=>v.toFixed(2)},
+  dwellings_per_person:{color:'#34c759', fmt:v=>v.toFixed(3)},
+  pop_permanent:     {color:'#636366', fmt:v=>fmt(v)},
+  pop_current:       {color:'#ff3b30', fmt:v=>fmt(v)},
+};
+
+function renderChart(key) {
+  currentChartKey = key;
+  ['cBtn1','cBtn2','cBtn3','cBtn4','cBtn5'].forEach(id=>document.getElementById(id).classList.remove('active'));
+  const btnMap = {cars_per_100:'cBtn1',cars_per_dwelling:'cBtn2',dwellings_per_person:'cBtn3',pop_permanent:'cBtn4',pop_current:'cBtn5'};
+  document.getElementById(btnMap[key]).classList.add('active');
+  const def = chartDefs[key];
+  const sorted = [...RAW].sort((a,b)=>b[key]-a[key]);
+  const maxVal = Math.max(...sorted.map(r=>r[key]));
+  document.getElementById('barChart').innerHTML = sorted.map(r=>{
+    const pct = r[key]/maxVal*100;
+    const val = def.fmt(r[key]);
+    return `<div class="bc-row">
+      <div class="bc-lbl">${regionName(r.region)}</div>
+      <div class="bc-bar" style="width:${Math.max(pct,2)}%;background:${def.color}20;border-left:3px solid ${def.color}">
+        <span class="bc-val" style="color:${def.color}">${val}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// CONCLUSIONS
+function renderConclusions() {
+  const sofia = RAW.find(r=>r.region==='СОФИЯ');
+  const M = lang==='en'?'M':'М';
+  if(lang==='bg') {
+    document.getElementById('conclusionsBox').innerHTML = `
+    <h2>Ключови заключения</h2>
+    <div class="conclusion-grid">
+      <div class="conclusion-item"><div class="conclusion-icon">🚗</div><h3>Автомобилизация</h3><p>Средно <strong>${avgCars100}</strong> леки автомобила на 100 души. Перник е лидер с 51.2, докато Кърджали има едва 16.7 — разлика от 3 пъти, обяснима с демографска специфика и гъстота на регистрации.</p></div>
+      <div class="conclusion-item"><div class="conclusion-icon">🏠</div><h3>Жилищен фонд</h3><p>Страната разполага с <strong>${(totalHousing/1000000).toFixed(2)}М</strong> жилища при население от ${(totalPop/1000000).toFixed(2)}М. Средно ${avgDwellPerson} жилища на човек — висок показател, дължащ се на обезлюдяване и вторично жилище.</p></div>
+      <div class="conclusion-item"><div class="conclusion-icon">📉</div><h3>Демографска миграция</h3><p>Разликата между постоянен и настоящ адрес разкрива вътрешна миграция. Кърджали, Разград и Шумен губят значителен дял реално присъстващо население, докато Софийска обл. и Варна печелят.</p></div>
+      <div class="conclusion-item"><div class="conclusion-icon">🏙️</div><h3>Концентрация в София</h3><p>София-град концентрира <strong>${(sofia.pop_permanent/totalPop*100).toFixed(1)}%</strong> от населението, <strong>${(sofia.cars_m1/totalCars*100).toFixed(1)}%</strong> от автомобилите и <strong>${(sofia.housing_total/totalHousing*100).toFixed(1)}%</strong> от жилищата — мощен моноцентричен модел.</p></div>
+      <div class="conclusion-item"><div class="conclusion-icon">🔑</div><h3>Авт. на жилище</h3><p>Средно <strong>${avgCarsPerDwell}</strong> автомобила на жилище. В София-град е 0.94 — почти 1 кола на апартамент, което обяснява острия паркинг дефицит. В Бургас и Видин стойностите са под 0.55.</p></div>
+      <div class="conclusion-item"><div class="conclusion-icon">📊</div><h3>Жилища на човек</h3><p>Видин (0.79) и Перник (0.83) имат най-много жилища спрямо жители — следствие от обезлюдяване. Кърджали (0.24) и Разград (0.36) имат най-малко — регионите с по-висока раждаемост и по-гъсто заселване.</p></div>
+      <div class="conclusion-item"><div class="conclusion-icon">🌍</div><h3>Реално население</h3><p>8.09М по постоянен адрес е административна цифра — много емигранти не са се дерегистрирали. НСИ оценява реалното население на около <strong>6.4–6.5М</strong>. Настоящият адрес (7.30М) е по-близо до реалността, но също включва неактуализирани записи.</p></div>
+    </div>`;
+  } else {
+    document.getElementById('conclusionsBox').innerHTML = `
+    <h2>Key Conclusions</h2>
+    <div class="conclusion-grid">
+      <div class="conclusion-item"><div class="conclusion-icon">🚗</div><h3>Car ownership</h3><p>Average <strong>${avgCars100}</strong> passenger cars per 100 people. Pernik leads with 51.2, while Kardzhali has only 16.7 — a 3× gap explained by demographic specifics and registration density.</p></div>
+      <div class="conclusion-item"><div class="conclusion-icon">🏠</div><h3>Housing stock</h3><p>The country has <strong>${(totalHousing/1000000).toFixed(2)}M</strong> dwellings for a registered population of ${(totalPop/1000000).toFixed(2)}M. Average ${avgDwellPerson} dwellings per person — high, due to depopulation and second homes.</p></div>
+      <div class="conclusion-item"><div class="conclusion-icon">📉</div><h3>Internal migration</h3><p>The gap between permanent and current address reveals internal migration. Kardzhali, Razgrad and Shumen lose a significant share of actual residents, while Sofia Region and Varna gain.</p></div>
+      <div class="conclusion-item"><div class="conclusion-icon">🏙️</div><h3>Sofia concentration</h3><p>Sofia City concentrates <strong>${(sofia.pop_permanent/totalPop*100).toFixed(1)}%</strong> of the population, <strong>${(sofia.cars_m1/totalCars*100).toFixed(1)}%</strong> of cars and <strong>${(sofia.housing_total/totalHousing*100).toFixed(1)}%</strong> of dwellings — a strong monocentric model.</p></div>
+      <div class="conclusion-item"><div class="conclusion-icon">🔑</div><h3>Cars per dwelling</h3><p>Average <strong>${avgCarsPerDwell}</strong> cars per dwelling. In Sofia City it reaches 0.94 — nearly one car per apartment, explaining the acute parking deficit. Burgas and Vidin are below 0.55.</p></div>
+      <div class="conclusion-item"><div class="conclusion-icon">📊</div><h3>Dwellings per person</h3><p>Vidin (0.79) and Pernik (0.83) have the most dwellings per resident — a consequence of depopulation. Kardzhali (0.24) and Razgrad (0.36) have the fewest — regions with higher birth rates and denser settlement.</p></div>
+      <div class="conclusion-item"><div class="conclusion-icon">🌍</div><h3>Actual population</h3><p>8.09M by permanent address is an administrative figure — many emigrants have not deregistered. NSI estimates the real population at around <strong>6.4–6.5M</strong>. The current address figure (7.30M) is closer to reality but also includes outdated records.</p></div>
+    </div>`;
+  }
+}
+
+// ── HOUSING DETAIL DATA ──────────────────────────────────────────
+const HOUSING_NATIONAL = {
+  total: 4324193, urban: 2960983, rural: 1363210,
+  r1: 275936, r2: 1306392, r3: 1509324, r4: 775490, r5: 241780, r6plus: 215271,
+  r1u: 233773, r2u: 1038581, r3u: 1043026, r4u: 440058, r5u: 111059, r6u: 94486,
+  r1r: 42163, r2r: 267811, r3r: 466298, r4r: 335432, r5r: 130721, r6r: 120785,
+};
+
+const HOUSING_REGIONS = [
+  {name:'БЛАГОЕВГРАД', total:165917, urban:103573, rural:62344, r1:9686,  r2:34758,  r3:53631,  r4:37399, r5:14619, r6plus:15824},
+  {name:'БУРГАС',      total:334510, urban:255650, rural:78860,  r1:32561, r2:129310, r3:106355, r4:41237, r5:12005, r6plus:13042},
+  {name:'ВАРНА',       total:289066, urban:238417, rural:50649,  r1:19454, r2:101806, r3:103269, r4:43215, r5:11209, r6plus:10113},
+  {name:'ВЕЛИКО ТЪРНОВО',total:146785,urban:89318, rural:57467,  r1:6757,  r2:33894,  r3:54147,  r4:35216, r5:11269, r6plus:5502},
+  {name:'ВИДИН',       total:74087,  urban:34715,  rural:39372,  r1:4329,  r2:18216,  r3:25235,  r4:16174, r5:5056,  r6plus:5077},
+  {name:'ВРАЦА',       total:116612, urban:62849,  rural:53763,  r1:10632, r2:35683,  r3:39473,  r4:19530, r5:6475,  r6plus:4819},
+  {name:'ГАБРОВО',     total:78620,  urban:52768,  rural:25852,  r1:3845,  r2:19525,  r3:27552,  r4:18337, r5:5963,  r6plus:3398},
+  {name:'ДОБРИЧ',      total:104130, urban:64288,  rural:39842,  r1:6717,  r2:30324,  r3:40029,  r4:19134, r5:4560,  r6plus:3366},
+  {name:'КЪРДЖАЛИ',    total:83525,  urban:37914,  rural:45611,  r1:1870,  r2:18341,  r3:25146,  r4:21152, r5:5236,  r6plus:11780},
+  {name:'КЮСТЕНДИЛ',   total:92043,  urban:48930,  rural:43113,  r1:4133,  r2:25977,  r3:31641,  r4:18425, r5:6068,  r6plus:5799},
+  {name:'ЛОВЕЧ',       total:92485,  urban:46179,  rural:46306,  r1:2977,  r2:19437,  r3:31828,  r4:23273, r5:8578,  r6plus:6392},
+  {name:'МОНТАНА',     total:92748,  urban:48967,  rural:43781,  r1:4684,  r2:23622,  r3:32855,  r4:19806, r5:6998,  r6plus:4783},
+  {name:'ПАЗАРДЖИК',   total:135465, urban:81833,  rural:53632,  r1:4158,  r2:31345,  r3:46576,  r4:31139, r5:10318, r6plus:11929},
+  {name:'ПЕРНИК',      total:100719, urban:53397,  rural:47322,  r1:6932,  r2:36714,  r3:31493,  r4:15850, r5:4889,  r6plus:4841},
+  {name:'ПЛЕВЕН',      total:144752, urban:89383,  rural:55369,  r1:7706,  r2:39741,  r3:54010,  r4:28175, r5:9288,  r6plus:5832},
+  {name:'ПЛОВДИВ',     total:362874, urban:260672, rural:102202, r1:17222, r2:100943, r3:134675, r4:68961, r5:19572, r6plus:21501},
+  {name:'РАЗГРАД',     total:59521,  urban:29404,  rural:30117,  r1:2046,  r2:13625,  r3:19011,  r4:13965, r5:6241,  r6plus:4633},
+  {name:'РУСЕ',        total:124216, urban:88409,  rural:35807,  r1:11959, r2:38647,  r3:43207,  r4:19597, r5:6803,  r6plus:4003},
+  {name:'СИЛИСТРА',    total:58285,  urban:27437,  rural:30848,  r1:3173,  r2:14111,  r3:19157,  r4:12408, r5:5434,  r6plus:4002},
+  {name:'СЛИВЕН',      total:96879,  urban:62984,  rural:33895,  r1:4891,  r2:26183,  r3:33437,  r4:19527, r5:7119,  r6plus:5722},
+  {name:'СМОЛЯН',      total:74372,  urban:36325,  rural:38047,  r1:3022,  r2:19745,  r3:27247,  r4:15596, r5:3857,  r6plus:4905},
+  {name:'СОФИЙСКА',    total:178930, urban:73756,  rural:105174, r1:10079, r2:51942,  r3:54507,  r4:35107, r5:14204, r6plus:13091},
+  {name:'СОФИЯ',       total:774748, urban:729270, rural:45478,  r1:71800, r2:300168, r3:276955, r4:87357, r5:21981, r6plus:16487},
+  {name:'СТАРА ЗАГОРА',total:186438, urban:122596, rural:63842,  r1:8412,  r2:52484,  r3:69043,  r4:39071, r5:9418,  r6plus:8010},
+  {name:'ТЪРГОВИЩЕ',   total:65806,  urban:35119,  rural:30687,  r1:2118,  r2:15412,  r3:24474,  r4:15824, r5:4950,  r6plus:3028},
+  {name:'ХАСКОВО',     total:129517, urban:86515,  rural:43002,  r1:5297,  r2:29500,  r3:47816,  r4:28243, r5:9394,  r6plus:9267},
+  {name:'ШУМЕН',       total:90001,  urban:55407,  rural:34594,  r1:5717,  r2:22819,  r3:30343,  r4:20439, r5:6219,  r6plus:4464},
+  {name:'ЯМБОЛ',       total:71142,  urban:44908,  rural:26234,  r1:3759,  r2:22120,  r3:26212,  r4:11333, r5:4057,  r6plus:3661},
+];
+
+// enrich with dwell_per_person from RAW
+HOUSING_REGIONS.forEach(h => {
+  const raw = RAW.find(r => r.region === h.name);
+  h.dwell_per_person = raw ? raw.dwellings_per_person : 0;
+});
+
+let currentHTab   = 'overview';
+let currentHSort  = 'total';
+const H_COLORS = ['#0071e3','#5ac8fa','#34c759','#ff9f0a','#ff6b35','#ff3b30'];
+
+function showHTab(tab) {
+  currentHTab = tab;
+  ['overview','regions','rooms'].forEach(t2 => {
+    document.getElementById('hPanel' + t2.charAt(0).toUpperCase() + t2.slice(1)).style.display = t2===tab ? '' : 'none';
+  });
+  [['hTab1','overview'],['hTab2','regions'],['hTab3','rooms']].forEach(([id,key]) => {
+    document.getElementById(id).classList.toggle('active', key===tab);
+  });
+  if(tab==='overview') renderHousingOverview();
+  if(tab==='regions')  renderHousingRegions(currentHSort);
+  if(tab==='rooms')    renderHousingRooms();
+}
+
+function sortHousing(key) { renderHousingRegions(key); }
+
+function renderHousingOverview() {
+  const n = HOUSING_NATIONAL;
+  const totalPop8 = totalPop;
+  const urbanPct = (n.urban/n.total*100).toFixed(1);
+  const ruralPct = (n.rural/n.total*100).toFixed(1);
+  const locStr = lang==='en'?'en-GB':'bg';
+  const M = lang==='en'?'M':'М';
+
+  const rooms = [
+    {lbl: t('room1'), val: n.r1,    color: H_COLORS[0]},
+    {lbl: t('room2'), val: n.r2,    color: H_COLORS[1]},
+    {lbl: t('room3'), val: n.r3,    color: H_COLORS[2]},
+    {lbl: t('room4'), val: n.r4,    color: H_COLORS[3]},
+    {lbl: t('room5'), val: n.r5,    color: H_COLORS[4]},
+    {lbl: t('room6'), val: n.r6plus,color: H_COLORS[5]},
+  ];
+  const maxR = Math.max(...rooms.map(r=>r.val));
+
+  document.getElementById('housingOverview').innerHTML = `
+    <div style="margin-bottom:18px;font-size:13px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.05em">${t('housing_overview_title')}</div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-bottom:24px">
+      <div class="detail-stat"><div class="detail-stat-val" style="color:var(--accent)">${(n.total/1000000).toFixed(2)}${M}</div><div class="detail-stat-lbl">${t('housing_total_lbl')}</div></div>
+      <div class="detail-stat"><div class="detail-stat-val" style="color:var(--accent-green)">${(n.urban/1000000).toFixed(2)}${M}</div><div class="detail-stat-lbl">${t('housing_urban')} (${urbanPct}%)</div></div>
+      <div class="detail-stat"><div class="detail-stat-val" style="color:var(--accent-orange)">${(n.rural/1000000).toFixed(2)}${M}</div><div class="detail-stat-lbl">${t('housing_rural')} (${ruralPct}%)</div></div>
+      <div class="detail-stat"><div class="detail-stat-val" style="color:var(--text-primary)">${(n.total/totalPop8).toFixed(3)}</div><div class="detail-stat-lbl">${t('housing_dpp_lbl')}</div></div>
+    </div>
+
+    <div style="margin-bottom:10px;font-size:12px;font-weight:600;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:.05em">${t('housing_urban')} / ${t('housing_rural')}</div>
+    <div style="display:flex;height:28px;border-radius:8px;overflow:hidden;margin-bottom:20px">
+      <div style="width:${urbanPct}%;background:var(--accent);display:flex;align-items:center;justify-content:center">
+        <span style="font-size:12px;font-weight:700;color:white">${urbanPct}%</span>
+      </div>
+      <div style="flex:1;background:var(--accent-orange);display:flex;align-items:center;justify-content:center">
+        <span style="font-size:12px;font-weight:700;color:white">${ruralPct}%</span>
+      </div>
+    </div>
+
+    <div style="margin-bottom:10px;font-size:12px;font-weight:600;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:.05em">${t('housing_rooms_title')}</div>
+    <div style="display:flex;height:28px;border-radius:8px;overflow:hidden;margin-bottom:20px">
+      ${rooms.map(r=>`<div style="width:${r.val/n.total*100}%;background:${r.color};display:flex;align-items:center;justify-content:center" title="${r.lbl}: ${r.val.toLocaleString(locStr)}">
+        ${r.val/n.total>0.07?`<span style="font-size:11px;font-weight:700;color:white">${(r.val/n.total*100).toFixed(0)}%</span>`:''}
+      </div>`).join('')}
+    </div>
+    ${rooms.map(r=>`
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+      <div style="width:12px;height:12px;border-radius:3px;background:${r.color};flex-shrink:0"></div>
+      <div style="width:110px;font-size:13px;font-weight:600;flex-shrink:0">${r.lbl}</div>
+      <div style="flex:1;height:9px;background:#f0f0f5;border-radius:4px;overflow:hidden">
+        <div style="width:${r.val/maxR*100}%;height:100%;background:${r.color};border-radius:4px"></div>
+      </div>
+      <div style="width:72px;text-align:right;font-size:12px;font-weight:700;color:${r.color}">${r.val.toLocaleString(locStr)}</div>
+      <div style="width:42px;text-align:right;font-size:12px;color:var(--text-tertiary)">${(r.val/n.total*100).toFixed(1)}%</div>
+    </div>`).join('')}`;
+}
+
+function renderHousingRegions(sortKey) {
+  currentHSort = sortKey;
+  ['hSort1','hSort2','hSort3','hSort4'].forEach((id,i)=>{
+    document.getElementById(id).classList.toggle('active', ['total','urban','rural','dwell_per_person'][i]===sortKey);
+  });
+  const sorted = [...HOUSING_REGIONS].sort((a,b)=>b[sortKey]-a[sortKey]);
+  const maxVal = Math.max(...sorted.map(r=>r[sortKey]));
+  const sortColors = {total:'#0071e3', urban:'#34c759', rural:'#ff9f0a', dwell_per_person:'#5e5ce6'};
+  const activeColor = sortColors[sortKey] || '#0071e3';
+  const locStr = lang==='en'?'en-GB':'bg';
+  const sortLabels = {total:t('hsort_total'), urban:t('hsort_urban'), rural:t('hsort_rural'), dwell_per_person:t('hsort_dpp')};
+
+  document.getElementById('housingRegions').innerHTML =
+    `<div style="margin-bottom:14px;font-size:13px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.05em">${t('housing_regions_title')} — ${sortLabels[sortKey]}</div>` +
+    sorted.map((h,i)=>{
+      const name = lang==='en' ? (NICE_EN[h.name]||h.name) : (NICE[h.name]||h.name);
+      const val = sortKey==='dwell_per_person' ? h[sortKey].toFixed(3) : h[sortKey].toLocaleString(locStr);
+      const pct = h[sortKey]/maxVal*100;
+      const urbanPct = h.urban/h.total*100;
+      return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+        <div style="width:22px;text-align:right;font-size:11px;color:var(--text-tertiary);flex-shrink:0">${i+1}</div>
+        <div style="width:130px;font-size:13px;font-weight:600;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${name}</div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:3px">
+          <div style="display:flex;align-items:center;gap:6px">
+            <div style="flex:1;height:9px;background:#f0f0f5;border-radius:4px;overflow:hidden">
+              <div style="width:${pct}%;height:100%;background:${activeColor};border-radius:4px"></div>
+            </div>
+            <div style="font-size:12px;font-weight:700;color:${activeColor};width:68px;text-align:right">${val}</div>
+          </div>
+          <div style="display:flex;height:4px;border-radius:2px;overflow:hidden;background:#f0f0f5" title="${t('housing_urban')}: ${h.urban.toLocaleString(locStr)} · ${t('housing_rural')}: ${h.rural.toLocaleString(locStr)}">
+            <div style="width:${urbanPct}%;background:var(--accent);height:100%"></div>
+            <div style="flex:1;background:var(--accent-orange);height:100%"></div>
+          </div>
+        </div>
+      </div>`;
+    }).join('') +
+    `<div style="margin-top:14px;display:flex;gap:16px;flex-wrap:wrap">
+      <div style="display:flex;align-items:center;gap:5px"><div style="width:10px;height:10px;border-radius:2px;background:var(--accent)"></div><span style="font-size:11px;color:var(--text-secondary)">${t('housing_urban')}</span></div>
+      <div style="display:flex;align-items:center;gap:5px"><div style="width:10px;height:10px;border-radius:2px;background:var(--accent-orange)"></div><span style="font-size:11px;color:var(--text-secondary)">${t('housing_rural')}</span></div>
+    </div>`;
+}
+
+function renderHousingRooms() {
+  const locStr = lang==='en'?'en-GB':'bg';
+  const roomKeys = ['r1','r2','r3','r4','r5','r6plus'];
+  const roomLabels = [t('room1'),t('room2'),t('room3'),t('room4'),t('room5'),t('room6')];
+
+  const sorted = [...HOUSING_REGIONS].sort((a,b)=>b.total-a.total);
+  const maxTotal = Math.max(...sorted.map(r=>r.total));
+
+  document.getElementById('housingRooms').innerHTML =
+    `<div style="margin-bottom:14px;font-size:13px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.05em">${t('housing_rooms_title')}</div>` +
+    sorted.map((h,i)=>{
+      const name = lang==='en' ? (NICE_EN[h.name]||h.name) : (NICE[h.name]||h.name);
+      const segs = roomKeys.map((k,j)=>`<div title="${roomLabels[j]}: ${h[k].toLocaleString(locStr)}" style="width:${h[k]/h.total*100}%;background:${H_COLORS[j]};height:100%"></div>`).join('');
+      return `<div style="margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
+          <div style="font-size:13px;font-weight:600">${name}</div>
+          <div style="font-size:12px;color:var(--text-tertiary)">${h.total.toLocaleString(locStr)}</div>
+        </div>
+        <div style="display:flex;height:14px;border-radius:6px;overflow:hidden">
+          ${segs}
+        </div>
+      </div>`;
+    }).join('') +
+    `<div style="margin-top:16px;display:flex;gap:12px;flex-wrap:wrap">
+      ${roomLabels.map((l,i)=>`<div style="display:flex;align-items:center;gap:5px"><div style="width:10px;height:10px;border-radius:2px;background:${H_COLORS[i]}"></div><span style="font-size:11px;color:var(--text-secondary)">${l}</span></div>`).join('')}
+    </div>`;
+}
+// ── END HOUSING DETAIL ────────────────────────────────────────────
+
+// ── VEHICLE DETAIL DATA ──────────────────────────────────────────
+const CAT_DATA = [{"cat":"M1","label":"Леки автомобили (кат. B)","total":3229942,"age_0_5":186055,"age_6_10":241486,"age_11_15":315907,"age_15_20":689938,"age_20plus":1796553},{"cat":"N1","label":"Лекотоварни до 3.5т","total":425855,"age_0_5":24788,"age_6_10":59046,"age_11_15":79254,"age_15_20":87389,"age_20plus":175378},{"cat":"N3","label":"Тежкотоварни над 12т","total":94890,"age_0_5":14542,"age_6_10":15568,"age_11_15":17483,"age_15_20":16053,"age_20plus":31244},{"cat":"L3e","label":"Мотоциклети","total":73048,"age_0_5":586,"age_6_10":3807,"age_11_15":10044,"age_15_20":18796,"age_20plus":39815},{"cat":"L1e","label":"Мопеди","total":49040,"age_0_5":139,"age_6_10":3406,"age_11_15":9175,"age_15_20":18209,"age_20plus":18111},{"cat":"N2","label":"Камиони 3.5–12т","total":34870,"age_0_5":758,"age_6_10":1058,"age_11_15":1994,"age_15_20":3870,"age_20plus":27190},{"cat":"M3","label":"Автобуси над 8м","total":10521,"age_0_5":683,"age_6_10":1085,"age_11_15":1568,"age_15_20":2406,"age_20plus":4779},{"cat":"M2","label":"Мини автобуси","total":6557,"age_0_5":348,"age_6_10":609,"age_11_15":825,"age_15_20":1722,"age_20plus":3053},{"cat":"T","label":"Трактори","total":3924,"age_0_5":0,"age_6_10":0,"age_11_15":0,"age_15_20":201,"age_20plus":3723}];
+
+const BRANDS_DATA = [{"МАРКА":"ФОЛКСВАГЕН","total":467841,"age_0_5":14004,"age_6_10":20658,"age_11_15":33188,"age_15_20":82829,"age_20plus":317161},{"МАРКА":"ОПЕЛ","total":279780,"age_0_5":3962,"age_6_10":8601,"age_11_15":17968,"age_15_20":51254,"age_20plus":197994},{"МАРКА":"МЕРЦЕДЕС","total":278268,"age_0_5":10679,"age_6_10":22679,"age_11_15":32823,"age_15_20":58947,"age_20plus":153140},{"МАРКА":"АУДИ","total":215949,"age_0_5":5982,"age_6_10":14769,"age_11_15":23137,"age_15_20":46278,"age_20plus":125782},{"МАРКА":"ТОЙОТА","total":205749,"age_0_5":22513,"age_6_10":20333,"age_11_15":19839,"age_15_20":53385,"age_20plus":89679},{"МАРКА":"БМВ","total":200870,"age_0_5":10815,"age_6_10":16732,"age_11_15":22906,"age_15_20":46229,"age_20plus":104188},{"МАРКА":"ПЕЖО","total":165027,"age_0_5":5758,"age_6_10":12342,"age_11_15":16193,"age_15_20":36409,"age_20plus":94325},{"МАРКА":"ФОРД","total":143632,"age_0_5":5104,"age_6_10":7236,"age_11_15":12786,"age_15_20":33204,"age_20plus":85302},{"МАРКА":"РЕНО","total":136147,"age_0_5":11097,"age_6_10":12100,"age_11_15":9682,"age_15_20":17347,"age_20plus":85921},{"МАРКА":"ШКОДА","total":100806,"age_0_5":20005,"age_6_10":16787,"age_11_15":11059,"age_15_20":20309,"age_20plus":32646},{"МАРКА":"ХОНДА","total":97777,"age_0_5":1089,"age_6_10":3334,"age_11_15":7563,"age_15_20":28607,"age_20plus":57184},{"МАРКА":"СИТРОЕН","total":93064,"age_0_5":3826,"age_6_10":3411,"age_11_15":9331,"age_15_20":25513,"age_20plus":50983},{"МАРКА":"НИСАН","total":84742,"age_0_5":4001,"age_6_10":7549,"age_11_15":10630,"age_15_20":20427,"age_20plus":42135},{"МАРКА":"ХЮНДАЙ","total":82058,"age_0_5":11881,"age_6_10":12303,"age_11_15":15757,"age_15_20":19985,"age_20plus":22132},{"МАРКА":"ФИАТ","total":67029,"age_0_5":741,"age_6_10":2711,"age_11_15":4286,"age_15_20":14790,"age_20plus":44501},{"МАРКА":"КИА","total":62905,"age_0_5":11401,"age_6_10":11308,"age_11_15":11397,"age_15_20":14623,"age_20plus":14176},{"МАРКА":"МАЗДА","total":62009,"age_0_5":3271,"age_6_10":6168,"age_11_15":7035,"age_15_20":15486,"age_20plus":30049},{"МАРКА":"СЕАТ","total":57258,"age_0_5":761,"age_6_10":1957,"age_11_15":3492,"age_15_20":11154,"age_20plus":39894},{"МАРКА":"ДАЧИЯ","total":53995,"age_0_5":18558,"age_6_10":11317,"age_11_15":11687,"age_15_20":11417,"age_20plus":1016},{"МАРКА":"СУЗУКИ","total":53549,"age_0_5":2394,"age_6_10":3201,"age_11_15":2790,"age_15_20":11038,"age_20plus":34126},{"МАРКА":"МИЦУБИШИ","total":44386,"age_0_5":749,"age_6_10":1903,"age_11_15":3460,"age_15_20":10168,"age_20plus":28106},{"МАРКА":"ВОЛВО","total":34368,"age_0_5":1848,"age_6_10":3224,"age_11_15":4287,"age_15_20":7995,"age_20plus":17014},{"МАРКА":"СУБАРУ","total":27079,"age_0_5":815,"age_6_10":1411,"age_11_15":2562,"age_15_20":7745,"age_20plus":14546},{"МАРКА":"ВАЗ","total":25628,"age_0_5":1,"age_6_10":4,"age_11_15":28,"age_15_20":1757,"age_20plus":23838},{"МАРКА":"ШЕВРОЛЕТ","total":23817,"age_0_5":78,"age_6_10":322,"age_11_15":4287,"age_15_20":14545,"age_20plus":4585},{"МАРКА":"ДЖИП","total":18178,"age_0_5":529,"age_6_10":2230,"age_11_15":3273,"age_15_20":2615,"age_20plus":9531},{"МАРКА":"ЛЕНД РОВЕР","total":17523,"age_0_5":1019,"age_6_10":1667,"age_11_15":2580,"age_15_20":2807,"age_20plus":9450},{"МАРКА":"АЛФА РОМЕО","total":16629,"age_0_5":233,"age_6_10":772,"age_11_15":634,"age_15_20":4355,"age_20plus":10635},{"МАРКА":"МИНИ","total":8915,"age_0_5":606,"age_6_10":1120,"age_11_15":1531,"age_15_20":2292,"age_20plus":3366},{"МАРКА":"ПОРШЕ","total":8856,"age_0_5":1825,"age_6_10":1851,"age_11_15":1951,"age_15_20":1656,"age_20plus":1573},{"МАРКА":"ЛЕКСУС","total":7806,"age_0_5":1202,"age_6_10":1797,"age_11_15":1114,"age_15_20":1704,"age_20plus":1989},{"МАРКА":"ТЕСЛА","total":4582,"age_0_5":2391,"age_6_10":1916,"age_11_15":275,"age_15_20":0,"age_20plus":0},{"МАРКА":"ЯГУАР","total":3168,"age_0_5":145,"age_6_10":622,"age_11_15":460,"age_15_20":580,"age_20plus":1361}];
+
+const AGE_LABELS = ['0–5 год.','6–10 год.','11–15 год.','15–20 год.','над 20 год.'];
+const AGE_KEYS   = ['age_0_5','age_6_10','age_11_15','age_15_20','age_20plus'];
+const AGE_COLORS = ['#34c759','#30d158','#ff9f0a','#ff6b35','#ff3b30'];
+
+let currentVTab  = 'categories';
+let currentBSort = 'total';
+
+function showVTab(tab) {
+  currentVTab = tab;
+  ['categories','brands','age'].forEach(t => {
+    document.getElementById('vPanel' + t.charAt(0).toUpperCase() + t.slice(1)).style.display = t===tab ? '' : 'none';
+  });
+  ['vTab1','vTab2','vTab3'].forEach((id,i)=>{
+    document.getElementById(id).classList.toggle('active', ['categories','brands','age'][i]===tab);
+  });
+  if(tab==='categories') renderCategories();
+  if(tab==='brands')     renderBrandsTable(currentBSort);
+  if(tab==='age')        renderAgeChart();
+}
+
+function renderCategories() {
+  const maxVal = Math.max(...CAT_DATA.map(c=>c.total));
+  const catColors = ['#0071e3','#5ac8fa','#ff9f0a','#ff6b35','#ff3b30','#636366','#34c759','#5e5ce6','#aaaaaa'];
+  document.getElementById('catChart').innerHTML =
+    `<div style="margin-bottom:14px;font-size:13px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.05em">${t('cat_header')}</div>` +
+    CAT_DATA.map((c,i)=>{
+      const pct = c.total/maxVal*100;
+      const ageSegs = AGE_KEYS.map((k,j)=>`<div title="${AGE_LABELS[j]}: ${c[k].toLocaleString('bg')}" style="width:${c[k]/c.total*100}%;background:${AGE_COLORS[j]};height:100%"></div>`).join('');
+      return `<div style="margin-bottom:16px">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px">
+          <div style="font-size:13px;font-weight:600">${c.label} <span style="font-size:11px;font-weight:400;color:var(--text-tertiary)">(${c.cat})</span></div>
+          <div style="font-size:13px;font-weight:700;color:${catColors[i]}">${c.total.toLocaleString('bg')}</div>
+        </div>
+        <div style="height:12px;background:#f0f0f5;border-radius:6px;overflow:hidden;margin-bottom:4px">
+          <div style="width:${pct}%;height:100%;background:${catColors[i]};border-radius:6px"></div>
+        </div>
+        <div style="display:flex;height:6px;border-radius:3px;overflow:hidden;background:#f0f0f5">
+          ${ageSegs}
+        </div>
+        <div style="display:flex;gap:4px;margin-top:5px;flex-wrap:wrap">
+          ${AGE_KEYS.map((k,j)=>`<span style="font-size:10px;color:var(--text-tertiary)">${AGE_LABELS[j]}: <b style="color:${AGE_COLORS[j]}">${c[k].toLocaleString('bg')}</b></span>`).join('<span style="color:#ddd;font-size:10px"> · </span>')}
+        </div>
+      </div>`;
+    }).join('') +
+    `<div style="margin-top:10px;display:flex;gap:14px;flex-wrap:wrap">
+      ${AGE_LABELS.map((l,i)=>`<div style="display:flex;align-items:center;gap:5px"><div style="width:10px;height:10px;border-radius:2px;background:${AGE_COLORS[i]}"></div><span style="font-size:11px;color:var(--text-secondary)">${l}</span></div>`).join('')}
+    </div>`;
+}
+
+function sortBrands(key) { renderBrandsTable(key); }
+
+function renderBrandsTable(sortKey) {
+  currentBSort = sortKey;
+  ['bSort1','bSort2','bSort3','bSort4','bSort5','bSort6'].forEach((id,i)=>{
+    document.getElementById(id).classList.toggle('active', ['total','age_0_5','age_6_10','age_11_15','age_15_20','age_20plus'][i]===sortKey);
+  });
+  const sorted = [...BRANDS_DATA].sort((a,b)=>b[sortKey]-a[sortKey]);
+  const maxVal = Math.max(...sorted.map(b=>b[sortKey]));
+  const colLabels = t('col_label');
+  const activeColors = {total:'#0071e3',age_0_5:'#34c759',age_6_10:'#30d158',age_11_15:'#ff9f0a',age_15_20:'#ff6b35',age_20plus:'#ff3b30'};
+  const activeColor = activeColors[sortKey] || '#0071e3';
+  const locStr = lang==='en'?'en-GB':'bg';
+
+  document.getElementById('brandsTable').innerHTML =
+    `<div style="margin-bottom:14px;font-size:13px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.05em">${t('brands_prefix')} ${colLabels[sortKey]}</div>` +
+    sorted.map((b,i)=>{
+      const ageSegs = AGE_KEYS.map((k,j)=>`<div title="${T[lang].col_label[k]}: ${b[k].toLocaleString(locStr)}" style="width:${b.total>0?b[k]/b.total*100:0}%;background:${AGE_COLORS[j]};height:100%"></div>`).join('');
+      return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+        <div style="width:22px;text-align:right;font-size:11px;color:var(--text-tertiary);flex-shrink:0">${i+1}</div>
+        <div style="width:110px;font-size:13px;font-weight:600;flex-shrink:0">${b['МАРКА']}</div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:3px">
+          <div style="display:flex;align-items:center;gap:6px">
+            <div style="flex:1;height:8px;background:#f0f0f5;border-radius:4px;overflow:hidden">
+              <div style="width:${b[sortKey]/maxVal*100}%;height:100%;background:${activeColor};border-radius:4px"></div>
+            </div>
+            <div style="font-size:12px;font-weight:700;color:${activeColor};width:64px;text-align:right">${b[sortKey].toLocaleString(locStr)}</div>
+          </div>
+          <div style="display:flex;height:4px;border-radius:2px;overflow:hidden;background:#f0f0f5">
+            ${ageSegs}
+          </div>
+        </div>
+      </div>`;
+    }).join('') +
+    `<div style="margin-top:16px;display:flex;gap:14px;flex-wrap:wrap">
+      ${Object.values(colLabels).slice(1).map((l,i)=>`<div style="display:flex;align-items:center;gap:5px"><div style="width:10px;height:10px;border-radius:2px;background:${AGE_COLORS[i]}"></div><span style="font-size:11px;color:var(--text-secondary)">${l}</span></div>`).join('')}
+    </div>`;
+}
+
+function renderAgeChart() {
+  const totalM1 = 3229942;
+  const ageData = [
+    {label: T[lang].col_label.age_0_5,   val:186055,  color:'#34c759'},
+    {label: T[lang].col_label.age_6_10,  val:241486,  color:'#30d158'},
+    {label: T[lang].col_label.age_11_15, val:315907,  color:'#ff9f0a'},
+    {label: T[lang].col_label.age_15_20, val:689938,  color:'#ff6b35'},
+    {label: T[lang].col_label.age_20plus,val:1796553, color:'#ff3b30'},
+  ];
+  const maxVal = Math.max(...ageData.map(d=>d.val));
+  const locStr = lang==='en'?'en-GB':'bg';
+  document.getElementById('ageChart').innerHTML =
+    `<div style="margin-bottom:14px;font-size:13px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.05em">${t('age_header')}</div>
+    <div style="display:flex;height:36px;border-radius:10px;overflow:hidden;margin-bottom:24px">
+      ${ageData.map(d=>`<div style="width:${d.val/totalM1*100}%;background:${d.color};display:flex;align-items:center;justify-content:center" title="${d.label}: ${d.val.toLocaleString(locStr)}">
+        ${d.val/totalM1>0.08?`<span style="font-size:11px;font-weight:700;color:white">${(d.val/totalM1*100).toFixed(1)}%</span>`:''}
+      </div>`).join('')}
+    </div>` +
+    ageData.map(d=>`<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+        <div style="width:12px;height:12px;border-radius:3px;background:${d.color};flex-shrink:0"></div>
+        <div style="width:90px;font-size:13px;font-weight:600;flex-shrink:0">${d.label}</div>
+        <div style="flex:1;height:10px;background:#f0f0f5;border-radius:5px;overflow:hidden">
+          <div style="width:${d.val/maxVal*100}%;height:100%;background:${d.color};border-radius:5px"></div>
+        </div>
+        <div style="width:80px;text-align:right;font-size:12px;font-weight:700;color:${d.color}">${d.val.toLocaleString(locStr)}</div>
+        <div style="width:42px;text-align:right;font-size:12px;color:var(--text-tertiary)">${(d.val/totalM1*100).toFixed(1)}%</div>
+      </div>`).join('') +
+    `<div style="margin-top:20px;padding:16px;background:var(--bg);border-radius:12px">
+      <div style="font-size:13px;font-weight:600;margin-bottom:6px">${t('age_insight_title')}</div>
+      <div style="font-size:13px;color:var(--text-secondary);line-height:1.6">${t('age_insight')}</div>
+    </div>`;
+}
+
+// ── END VEHICLE DETAIL ────────────────────────────────────────────
+
+renderCards();
+renderChart('cars_per_100');
+renderHousingOverview();
+renderCategories();
+renderConclusions();
+
+// Auto-open first card
+const firstRegion = getSorted(RAW)[0].region;
+showDetail(firstRegion);
+window.addEventListener('scroll', () => {
+  document.getElementById('backToTop').classList.toggle('visible', window.scrollY > 400);
+});
+</script>
+</body>
+</html>
