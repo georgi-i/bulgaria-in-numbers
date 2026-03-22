@@ -327,23 +327,28 @@
   }
   .lang-btn:hover { border-color: var(--accent); color: var(--accent); }
 
+  .nav-dropdown {
+    display: none;
+  }
+
   @media (max-width: 600px) {
-    nav { height: auto; flex-wrap: wrap; padding: 10px 16px; gap: 0; position: relative; }
-    nav > div { flex-wrap: wrap; gap: 8px; }
+    nav { height: auto; padding: 10px 16px; flex-wrap: wrap; align-items: center; }
+    .nav-links { display: none !important; }
     .nav-menu-btn { display: flex; align-items: center; justify-content: center; }
-    .nav-links {
+    .nav-dropdown {
       display: none; flex-direction: column; gap: 4px;
       width: 100%; padding: 10px 0 4px;
       border-top: 1px solid var(--border); margin-top: 8px;
-      order: 10;
+      flex-basis: 100%;
     }
-    .nav-links.open { display: flex; }
-    .nav-links a {
+    .nav-dropdown.open { display: flex; }
+    .nav-dropdown a {
       font-size: 14px; padding: 10px 12px;
       border-radius: 10px; background: rgba(0,0,0,0.03);
-      font-weight: 500;
+      font-weight: 500; color: var(--text-secondary);
+      text-decoration: none;
     }
-    .nav-links a:hover { background: rgba(0,0,0,0.07); }
+    .nav-dropdown a:hover { background: rgba(0,0,0,0.07); }
     .region-metrics { grid-template-columns: 1fr 1fr; }
     .hero h1 { font-size: 32px; }
     .hero p { font-size: 16px; }
@@ -355,7 +360,7 @@
 
 <nav>
   <a class="nav-brand" href="#" id="navBrand">🇧🇬 България в числа</a>
-  <div style="display:flex;align-items:center;gap:20px;">
+  <div style="display:flex;align-items:center;gap:12px;">
     <div class="nav-links" id="navLinks">
       <a href="#overview" onclick="closeNav()" data-i18n="nav_overview">Преглед</a>
       <a href="#regions" onclick="closeNav()" data-i18n="nav_regions">Области</a>
@@ -366,10 +371,18 @@
     </div>
     <button class="lang-btn" id="langBtn" onclick="toggleLang()">EN</button>
     <button class="nav-menu-btn" id="navMenuBtn" aria-label="Меню" onclick="toggleNav()">
-      <svg id="navIcon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
         <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
       </svg>
     </button>
+  </div>
+  <div class="nav-dropdown" id="navDropdown">
+    <a href="#overview" onclick="closeNav()" data-i18n="nav_overview">Преглед</a>
+    <a href="#regions" onclick="closeNav()" data-i18n="nav_regions">Области</a>
+    <a href="#housing-details" onclick="closeNav()" data-i18n="nav_housing">Жилища</a>
+    <a href="#vehicles" onclick="closeNav()" data-i18n="nav_vehicles">МПС детайли</a>
+    <a href="#charts" onclick="closeNav()" data-i18n="nav_charts">Анализ</a>
+    <a href="#conclusions" onclick="closeNav()" data-i18n="nav_conclusions">Заключения</a>
   </div>
 </nav>
 
@@ -513,11 +526,10 @@
 
 <script>
 function toggleNav() {
-  const links = document.getElementById('navLinks');
-  links.classList.toggle('open');
+  document.getElementById('navDropdown').classList.toggle('open');
 }
 function closeNav() {
-  document.getElementById('navLinks').classList.remove('open');
+  document.getElementById('navDropdown').classList.remove('open');
 }
 
 // ── I18N ─────────────────────────────────────────────────────────
@@ -671,7 +683,7 @@ function toggleLang() {
 function applyLang() {
   // Nav brand
   document.getElementById('navBrand').innerHTML = t('brand');
-  // Nav links
+  // Nav links (desktop) and dropdown (mobile)
   document.querySelectorAll('[data-i18n]').forEach(el => {
     el.textContent = t(el.dataset.i18n);
   });
@@ -1321,10 +1333,6 @@ renderChart('cars_per_100');
 renderHousingOverview();
 renderCategories();
 renderConclusions();
-
-// Auto-open first card
-const firstRegion = getSorted(RAW)[0].region;
-showDetail(firstRegion);
 window.addEventListener('scroll', () => {
   document.getElementById('backToTop').classList.toggle('visible', window.scrollY > 400);
 });
