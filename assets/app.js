@@ -545,8 +545,8 @@ function offerBlock(bg, cn) {
   return `
     <div class="group-title" style="margin:40px 0 4px">${bg ? 'Цени на предлагане в обявите' : 'Asking prices in listings'}</div>
     <p class="chart-note" style="margin:0 0 18px">${bg
-      ? `Медианни цени по квартали от imot.bg към ${fmtDate(sofia.date).replace(/\.?$/, '.')} Това са цените в обявите, не цените на реалните сделки.`
-      : `Median prices by neighbourhood from imot.bg as of ${fmtDate(sofia.date)}. These are listing prices, not transaction prices.`}</p>
+      ? `Медианни цени по квартали от <a href="https://www.imot.bg/sredni-ceni" target="_blank" rel="noopener">imot.bg</a> към ${fmtDate(sofia.date).replace(/\.?$/, '.')} Това са цените в обявите, не цените на реалните сделки.`
+      : `Median prices by neighbourhood from <a href="https://www.imot.bg/sredni-ceni" target="_blank" rel="noopener">imot.bg</a> as of ${fmtDate(sofia.date)}. These are listing prices, not transaction prices.`}</p>
     <div class="big-stat">
       <div><b class="num">${m2(sh.eur_m2)}</b><span>${bg ? 'София, медиана по квартали' : 'Sofia, median across neighbourhoods'}</span></div>
       <div><b class="num">${eur(sh.price_r2)}</b><span>${bg ? 'типичен двустаен в София' : 'typical 2-room flat in Sofia'}</span></div>
