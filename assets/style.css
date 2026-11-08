@@ -221,6 +221,22 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 @media (max-width: 820px) { .mig-grid { grid-template-columns: 1fr; gap: 28px; } }
 @media (max-width: 720px) { .mig-grid .bar-row { grid-template-columns: 110px minmax(0, 1fr) 60px; } .facts li { font-size: 14px; } }
 
+/* PRICES */
+.line-chart { width: 100%; height: auto; display: block; margin: 8px 0 4px; overflow: visible; }
+.line-chart .grid { stroke: var(--line-soft); stroke-width: 1; }
+.line-chart .axis { fill: var(--text-3); font-size: 11px; font-family: var(--font); }
+.line-chart .s-total { fill: none; stroke: var(--accent); stroke-width: 2.25; stroke-linejoin: round; }
+.line-chart .s-other { fill: none; stroke: var(--text-3); stroke-width: 1.25; stroke-linejoin: round; opacity: .7; }
+.line-chart .s-other.dash { stroke-dasharray: 4 3; }
+.line-chart .end { fill: var(--accent); }
+.line-chart .end-lbl { fill: var(--text); font-size: 12px; font-weight: 600; font-family: var(--font); }
+.swatch.line { height: 2px; border-radius: 1px; width: 16px; }
+.swatch.gray { background: var(--text-3); }
+.swatch.dash { background: repeating-linear-gradient(90deg, var(--text-3) 0 4px, transparent 4px 7px); }
+.mini-table tr.hl td { font-weight: 600; }
+.mini-table .pos { color: var(--text); }
+.mini-table .neg-v { color: var(--text-2); }
+
 /* INSIGHTS */
 .insights { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
 .insight { background: var(--card); border-radius: var(--radius); padding: 26px; }

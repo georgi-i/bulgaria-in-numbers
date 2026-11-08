@@ -16,13 +16,13 @@ const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&l
 /* ── state ─────────────────────────────────────────────── */
 let lang = 'bg';
 try { if (localStorage.getItem('lang') === 'en') lang = 'en'; } catch (_) {}
-const state = { metric: 'pop', selected: null, sort: { key: 'pop', dir: -1 }, query: '', veh: 'cat', brandSort: 'total', hou: 'rooms' };
+const state = { offer: 'top', metric: 'pop', selected: null, sort: { key: 'pop', dir: -1 }, query: '', veh: 'cat', brandSort: 'total', hou: 'rooms' };
 
 /* ── i18n ──────────────────────────────────────────────── */
 const T = {
   bg: {
     brand: 'България в числа', nav_map: 'Карта', nav_regions: 'Области', nav_population: 'Население',
-    nav_vehicles: 'Автомобили', nav_migration: 'Миграция', mig_title: 'Миграция', nav_housing: 'Жилища', nav_insights: 'Изводи',
+    nav_vehicles: 'Автомобили', nav_prices: 'Цени', prices_title: 'Цени и продажби на жилища', nav_migration: 'Миграция', mig_title: 'Миграция', nav_housing: 'Жилища', nav_insights: 'Изводи',
     hero_eyebrow: '28 области · данни 2024–2026', hero_title: 'България в числа',
     hero_lead: 'Население, икономика, автомобили и жилища — по области.',
     map_title: 'Карта', map_sub: 'Изберете показател и кликнете върху област.',
@@ -72,7 +72,7 @@ const T = {
   },
   en: {
     brand: 'Bulgaria in Numbers', nav_map: 'Map', nav_regions: 'Regions', nav_population: 'Population',
-    nav_vehicles: 'Vehicles', nav_migration: 'Migration', mig_title: 'Migration', nav_housing: 'Housing', nav_insights: 'Insights',
+    nav_vehicles: 'Vehicles', nav_prices: 'Prices', prices_title: 'House prices and sales', nav_migration: 'Migration', mig_title: 'Migration', nav_housing: 'Housing', nav_insights: 'Insights',
     hero_eyebrow: '28 regions · data 2024–2026', hero_title: 'Bulgaria in Numbers',
     hero_lead: 'Population, economy, vehicles and housing — region by region.',
     map_title: 'Map', map_sub: 'Pick an indicator and click a region.',
@@ -427,6 +427,194 @@ function renderCities() {
     : `${top4.map(cityName).join(', ')} hold ${fPct(share4)} of everyone with a current address in Bulgaria (${fInt(sum(top4, (x) => x.current))} of ${fInt(totalCurr)}). The current address is where people actually live; the difference to the permanent address shows how many registered there live elsewhere. GRAO, ${fmtDate(P.settlements_date)}.`;
 }
 
+/* ── house prices & sales ─────────────────────────────── */
+const HM = window.HOUSING_MARKET;
+function renderPrices() {
+  const bg = lang === 'bg', N = HM.nsi;
+  const latest = (series) => { const k = Object.keys(series || {}).sort(); return k.length ? [k[k.length - 1], series[k[k.length - 1]]] : [null, null]; };
+  const val = (key, entity, typ = 'total') => latest(((N[key] || {})[entity] || {})[typ])[1];
+  const qLabel = (p) => { const [y, q] = p.split('-Q'); return bg ? `${['I', 'II', 'III', 'IV'][q - 1]} трим. ${y} г.` : `Q${q} ${y}`; };
+  const pc = (v) => (v == null ? '—' : fSigned(v, 1) + (bg ? ' %' : '%'));
+  const cityList = Object.keys(N['hpi.cities.yoy'] || {});
+  const period = latest((N['hpi.cities.yoy'] || {})[cityList[0]]?.total)[0];
+  const cityEn = { 'София': 'Sofia', 'Пловдив': 'Plovdiv', 'Варна': 'Varna', 'Бургас': 'Burgas', 'Русе': 'Ruse', 'Стара Загора': 'Stara Zagora' };
+  const cn = (c) => (bg ? c : cityEn[c] || c);
+
+  // Eurostat long series (2015 = 100)
+  const S = HM.eurostat_hpi.series, keys = Object.keys(S.total).sort(), last = keys[keys.length - 1];
+  const yearAgo = `${+last.slice(0, 4) - 1}${last.slice(4)}`;
+  const natYoy = (S.total[last] / S.total[yearAgo] - 1) * 100;
+  const avg2015 = sum(keys.filter((k) => k.startsWith('2015')), (k) => S.total[k]) / keys.filter((k) => k.startsWith('2015')).length;
+  const times = S.total[last] / avg2015;
+
+  // line chart
+  const W = 800, Hh = 240, L = 36, Rr = 56, T = 10, B = 26;
+  const all = ['total', 'new', 'existing'].flatMap((t) => keys.map((k) => S[t][k]).filter((v) => v != null));
+  const top = Math.ceil(Math.max(...all) / 50) * 50, bot = Math.floor(Math.min(...all) / 50) * 50;
+  const x = (i) => L + (i / (keys.length - 1)) * (W - L - Rr);
+  const y = (v) => T + (1 - (v - bot) / (top - bot)) * (Hh - T - B);
+  const path = (t) => 'M' + keys.map((k, i) => (S[t][k] == null ? null : `${x(i).toFixed(1)},${y(S[t][k]).toFixed(1)}`)).filter(Boolean).join('L');
+  let grid = '';
+  for (let v = bot; v <= top; v += 50) grid += `<line class="grid" x1="${L}" x2="${W - Rr}" y1="${y(v)}" y2="${y(v)}"/><text class="axis" x="${L - 6}" y="${y(v) + 4}" text-anchor="end">${v}</text>`;
+  keys.forEach((k, i) => { if (k.endsWith('Q1') && +k.slice(0, 4) % 2 === 1) grid += `<text class="axis" x="${x(i)}" y="${Hh - 6}" text-anchor="middle">${k.slice(0, 4)}</text>`; });
+  const chart = `<svg class="line-chart" viewBox="0 0 ${W} ${Hh}" role="img" aria-label="${bg ? 'Индекс на цените на жилищата' : 'House price index'}">${grid}
+    <path class="s-other dash" d="${path('new')}"/><path class="s-other" d="${path('existing')}"/><path class="s-total" d="${path('total')}"/>
+    <circle class="end" cx="${x(keys.length - 1)}" cy="${y(S.total[last])}" r="3.5"/>
+    <text class="end-lbl" x="${x(keys.length - 1) + 8}" y="${y(S.total[last]) + 4}">${fDec(S.total[last], 0)}</text></svg>`;
+
+  // six cities table
+  const rows = cityList.map((c) => [c, val('hpi.cities.yoy', c), val('hpi.cities.yoy', c, 'new'), val('hpi.cities.yoy', c, 'existing'), val('sales_count.cities.yoy', c), val('sales_value.cities.yoy', c)]);
+  const cell = (v) => `<td class="${v == null ? '' : v >= 0 ? 'pos' : 'neg-v'}">${pc(v)}</td>`;
+  const table = `<table class="mini-table"><thead><tr><th>${bg ? 'Град' : 'City'}</th><th>${bg ? 'Цени' : 'Prices'}</th><th>${bg ? 'нови' : 'new'}</th><th>${bg ? 'съществуващи' : 'existing'}</th><th>${bg ? 'Брой продажби' : 'Number of sales'}</th><th>${bg ? 'Стойност на продажбите' : 'Value of sales'}</th></tr></thead>
+    <tbody>${rows.map((r) => `<tr class="${r[0] === 'София' ? 'hl' : ''}"><td>${esc(cn(r[0]))}</td>${r.slice(1).map(cell).join('')}</tr>`).join('')}</tbody></table>`;
+
+  // statistical regions, 2025 = 100
+  const regIdx = N['hpi.regions.idx2025'] || {};
+  const regNames = Object.fromEntries(MIG.internal.regions.map((r) => [r.bg, r.en]));
+  const regItems = Object.keys(regIdx).filter((k) => regNames[k]).map((k) => ({ label: bg ? k : regNames[k], value: latest(regIdx[k].total)[1] - 100 }))
+    .sort((a, b) => b.value - a.value);
+
+  // facts
+  const ab = (v) => fDec(Math.abs(v), 1) + (bg ? ' %' : '%');
+  const vv = (n) => (/^[ВвФф]/.test(n) ? 'във ' : 'в ') + n;
+  const sof = rows.find((r) => r[0] === 'София');
+  const byPrice = [...rows].filter((r) => r[1] != null).sort((a, b) => b[1] - a[1]);
+  const bySales = [...rows].filter((r) => r[4] != null).sort((a, b) => a[4] - b[4]);
+  const salesDown = rows.filter((r) => r[4] < 0).length;
+  const natSales = val('sales_count.national.yoy', 'Общо за страната'), natQoq = val('sales_count.national.qoq', 'Общо за страната');
+  const facts = bg ? [
+    `Жилищата в страната са поскъпнали <b>${fDec(times, 1)} пъти</b> спрямо 2015 г. и с <b>${pc(natYoy)}</b> за последната година (Евростат, ${qLabel(last)}).`,
+    `В София цените растат с <b>${pc(sof[1])}</b> за година (нови ${pc(sof[2])}, съществуващи ${pc(sof[3])}), но броят на продажбите ${sof[4] < 0 ? 'пада' : 'расте'} с <b>${ab(sof[4])}</b>.`,
+    `Стойността на продажбите в София ${sof[5] < 0 ? 'спада' : 'расте'} с ${ab(sof[5])}${sof[5] > sof[4] ? ', по-малко от броя им — сделките са по-малко, но по-скъпи' : ''}.`,
+    `Най-бързо поскъпват жилищата ${vv(byPrice[0][0])} (${pc(byPrice[0][1])}), най-бавно — ${vv(byPrice[byPrice.length - 1][0])} (${pc(byPrice[byPrice.length - 1][1])}).`,
+    `Продажбите намаляват ${salesDown === rows.length ? `във всички ${rows.length} големи града` : `в ${salesDown} от ${rows.length} големи града`}; най-силен е спадът ${vv(bySales[0][0])} (${pc(bySales[0][4])}). В цялата страна броят им ${natSales < 0 ? 'пада' : 'расте'} с ${ab(natSales)} спрямо година по-рано.`,
+    natQoq != null ? `Спрямо предходното тримесечие продажбите в страната ${natQoq < 0 ? 'намаляват' : 'растат'} с ${ab(natQoq)} — пролетта традиционно е по-активна.` : null,
+    `<span class="fine">Показателите за продажбите на НСИ са процентни изменения, а не брой сделки.</span>`,
+  ] : [
+    `Housing in Bulgaria is <b>${fDec(times, 1)}×</b> as expensive as in 2015 and <b>${pc(natYoy)}</b> more than a year ago (Eurostat, ${qLabel(last)}).`,
+    `In Sofia prices rose <b>${pc(sof[1])}</b> year on year (new ${pc(sof[2])}, existing ${pc(sof[3])}), while the number of sales ${sof[4] < 0 ? 'fell' : 'rose'} <b>${ab(sof[4])}</b>.`,
+    `The value of sales in Sofia ${sof[5] < 0 ? 'fell' : 'rose'} ${ab(sof[5])}${sof[5] > sof[4] ? ', less than their number — fewer but more expensive deals' : ''}.`,
+    `Prices rose fastest in ${cn(byPrice[0][0])} (${pc(byPrice[0][1])}) and slowest in ${cn(byPrice[byPrice.length - 1][0])} (${pc(byPrice[byPrice.length - 1][1])}).`,
+    `Sales fell in ${salesDown === rows.length ? `all ${rows.length}` : `${salesDown} of the ${rows.length}`} largest cities, most of all in ${cn(bySales[0][0])} (${pc(bySales[0][4])}). Nationwide they ${natSales < 0 ? 'fell' : 'rose'} ${ab(natSales)} year on year.`,
+    natQoq != null ? `Compared with the previous quarter, national sales ${natQoq < 0 ? 'fell' : 'rose'} ${ab(natQoq)} — spring is usually busier.` : null,
+    `<span class="fine">NSI sales indicators are percentage changes, not numbers of transactions.</span>`,
+  ];
+
+  $('#pricesSub').textContent = bg
+    ? `Индекси на цените и продажбите, НСИ — ${qLabel(period)} (предварителни данни). Дългият ред е от Евростат.`
+    : `Price and sales indices, NSI — ${qLabel(period)} (preliminary). The long series is from Eurostat.`;
+  const html = `
+    <div class="big-stat">
+      <div><b class="num">${pc(natYoy)}</b><span>${bg ? 'цени в страната, за година' : 'prices nationwide, year on year'}</span></div>
+      <div><b class="num">${pc(sof[1])}</b><span>${bg ? 'цени в София, за година' : 'prices in Sofia, year on year'}</span></div>
+      <div><b class="num">${pc(sof[4])}</b><span>${bg ? 'брой продажби в София' : 'number of sales in Sofia'}</span></div>
+      <div><b class="num">${pc(natSales)}</b><span>${bg ? 'брой продажби в страната' : 'number of sales nationwide'}</span></div>
+    </div>
+    <div class="group-title" style="margin:0 0 6px">${bg ? 'Индекс на цените на жилищата в България, 2015 = 100' : 'House price index, Bulgaria, 2015 = 100'}</div>
+    <div class="legend-inline" style="margin-bottom:4px">
+      <span><i class="swatch line"></i>${bg ? 'Всички' : 'All'}</span>
+      <span><i class="swatch line gray"></i>${bg ? 'Съществуващи' : 'Existing'}</span>
+      <span><i class="swatch line dash"></i>${bg ? 'Нови' : 'New'}</span>
+    </div>
+    ${chart}
+    <div class="group-title" style="margin:32px 0 4px">${bg ? 'Шестте най-големи града — изменение за година' : 'Six largest cities — change year on year'}</div>
+    <div class="table-wrap">${table}</div>
+    <div class="group-title" style="margin:32px 0 12px">${bg ? 'Цени спрямо средното за 2025 г. по статистически райони' : 'Prices vs. 2025 average by statistical region'}</div>
+    ${barList(regItems, { fmt: (v) => pc(v) })}
+    <ul class="facts">${facts.filter(Boolean).map((f) => `<li>${f}</li>`).join('')}</ul>
+    ${offerBlock(bg, cn)}`;
+  $('#pricesBody').innerHTML = html;
+  renderOfferList();
+}
+
+/* asking prices from imot.bg */
+function offerBlock(bg, cn) {
+  const O = window.OFFER_PRICES;
+  if (!O) return '';
+  const cities = Object.entries(O.cities).map(([name, c]) => ({ name, c, h: c.history[c.date] }));
+  const sofia = O.cities['София'];
+  if (!sofia) return '';
+  const sh = sofia.history[sofia.date];
+  const eur = (v) => (v == null ? '—' : bg ? `${fInt(v)} €` : `€${fInt(v)}`);
+  const m2 = (v) => eur(v) + (bg ? '/м²' : '/m²');
+  const hist = Object.keys(sofia.history).sort();
+  const target = `${+sofia.date.slice(0, 4) - 1}${sofia.date.slice(4)}`;
+  const near = hist.filter((d) => Math.abs(new Date(d) - new Date(target)) < 120 * 864e5)
+    .sort((a, b) => Math.abs(new Date(a) - new Date(target)) - Math.abs(new Date(b) - new Date(target)))[0];
+  const first = near, chg = near ? (sh.eur_m2 / sofia.history[near].eur_m2 - 1) * 100 : null;
+  return `
+    <div class="group-title" style="margin:40px 0 4px">${bg ? 'Цени на предлагане в обявите' : 'Asking prices in listings'}</div>
+    <p class="chart-note" style="margin:0 0 18px">${bg
+      ? `Медианни цени по квартали от imot.bg към ${fmtDate(sofia.date).replace(/\.?$/, '.')} Това са цените в обявите, не цените на реалните сделки.`
+      : `Median prices by neighbourhood from imot.bg as of ${fmtDate(sofia.date)}. These are listing prices, not transaction prices.`}</p>
+    <div class="big-stat">
+      <div><b class="num">${m2(sh.eur_m2)}</b><span>${bg ? 'София, медиана по квартали' : 'Sofia, median across neighbourhoods'}</span></div>
+      <div><b class="num">${eur(sh.price_r2)}</b><span>${bg ? 'типичен двустаен в София' : 'typical 2-room flat in Sofia'}</span></div>
+      <div><b class="num">${eur(sh.price_r3)}</b><span>${bg ? 'типичен тристаен в София' : 'typical 3-room flat in Sofia'}</span></div>
+      ${chg != null ? `<div><b class="num">${fSigned(chg, 1)}${bg ? ' %' : '%'}</b><span>${bg ? 'София, спрямо' : 'Sofia, vs.'} ${fmtDate(first)}</span></div>` : ''}
+    </div>
+    <div class="group-title" style="margin:0 0 12px">${bg ? 'Шестте големи града, €/м²' : 'Six largest cities, €/m²'}</div>
+    ${barList(cities.sort((a, b) => b.h.eur_m2 - a.h.eur_m2).map((x) => ({ label: cn(x.name), value: x.h.eur_m2 })), { fmt: m2 })}
+    ${offerChart(bg, cn)}
+    <div class="sub-controls" style="margin:32px 0 16px"><span class="group-title" style="margin:0">${bg ? 'Квартали в София' : 'Sofia neighbourhoods'}</span><div class="segmented" id="offerTabs"></div></div>
+    <div id="offerList"></div>`;
+}
+function renderOfferList() {
+  const O = window.OFFER_PRICES, box = $('#offerList');
+  if (!O || !box) return;
+  const bg = lang === 'bg', sofia = O.cities['София'];
+  const m2 = (v) => (bg ? `${fInt(v)} €/м²` : `€${fInt(v)}/m²`);
+  const dName = (n) => n.replace(/^ж\.гр\./, '').replace(/^в\.з\./, 'в.з. ');
+  const ds = sofia.districts.filter((d) => d.total).sort((a, b) => b.total - a.total);
+  // growth over ~5 years, using the snapshot closest to five years before the latest one
+  const dh = sofia.district_history || {}, dates = Object.keys(dh).sort();
+  const target = `${+sofia.date.slice(0, 4) - 5}${sofia.date.slice(4)}`;
+  const base = dates.reduce((best, d) => (Math.abs(new Date(d) - new Date(target)) < Math.abs(new Date(best) - new Date(target)) ? d : best), dates[0]);
+  const growth = base && base < sofia.date ? ds.filter((d) => dh[base][d.name]).map((d) => ({ ...d, g: (d.total / dh[base][d.name] - 1) * 100 })).sort((a, b) => b.g - a.g) : [];
+  const tabs = [['top', bg ? 'Най-скъпи' : 'Most expensive'], ['low', bg ? 'Най-достъпни' : 'Most affordable']];
+  if (growth.length) tabs.push(['growth', bg ? `Най-голям ръст от ${base.slice(0, 4)} г.` : `Biggest rise since ${base.slice(0, 4)}`]);
+  if (!tabs.some((x) => x[0] === state.offer)) state.offer = 'top';
+  segmented($('#offerTabs'), tabs, state.offer, (id) => { state.offer = id; renderOfferList(); });
+  const items = state.offer === 'growth'
+    ? growth.slice(0, 15).map((d) => ({ label: dName(d.name), value: d.g, extra: m2(d.total) }))
+    : (state.offer === 'top' ? ds.slice(0, 15) : ds.slice(-15).reverse()).map((d) => ({ label: dName(d.name), value: d.total }));
+  box.innerHTML = barList(items, state.offer === 'growth' ? { fmt: (v) => fSigned(v, 0) + (bg ? ' %' : '%') } : { fmt: m2, max: ds[0].total })
+    + `<p class="chart-note">${bg ? `Общо ${ds.length} квартала с данни. Медианна цена на предлагане, всички типове апартаменти.` : `${ds.length} neighbourhoods with data. Median asking price, all flat types.`}</p>`;
+}
+function offerChart(bg, cn) {
+  const O = window.OFFER_PRICES;
+  const series = Object.entries(O.cities).map(([name, c]) => ({ name, pts: Object.entries(c.history).filter(([, h]) => h.eur_m2).map(([d, h]) => [new Date(d).getTime(), h.eur_m2]) }));
+  const allPts = series.flatMap((s) => s.pts);
+  if (allPts.length < 8) return '';
+  const W = 800, Hh = 260, L = 44, Rr = 96, T = 10, B = 26;
+  const t0 = Math.min(...allPts.map((p) => p[0])), t1 = Math.max(...allPts.map((p) => p[0]));
+  const top = Math.ceil(Math.max(...allPts.map((p) => p[1])) / 500) * 500;
+  const x = (t) => L + ((t - t0) / (t1 - t0)) * (W - L - Rr), y = (v) => T + (1 - v / top) * (Hh - T - B);
+  let grid = '';
+  for (let v = 0; v <= top; v += 500) grid += `<line class="grid" x1="${L}" x2="${W - Rr}" y1="${y(v)}" y2="${y(v)}"/><text class="axis" x="${L - 6}" y="${y(v) + 4}" text-anchor="end">${fInt(v)}</text>`;
+  const y0 = new Date(t0).getFullYear(), y1 = new Date(t1).getFullYear();
+  for (let yr = y0 + 1; yr <= y1; yr++) if ((yr - y0) % 2 === 1 || y1 - y0 < 8) grid += `<text class="axis" x="${x(new Date(yr, 0, 1).getTime())}" y="${Hh - 6}" text-anchor="middle">${yr}</text>`;
+  const ends = [];
+  const lines = series.map((s) => {
+    const d = 'M' + s.pts.map((p) => `${x(p[0]).toFixed(1)},${y(p[1]).toFixed(1)}`).join('L');
+    const last = s.pts[s.pts.length - 1];
+    ends.push({ name: s.name, y: y(last[1]), v: last[1] });
+    return `<path class="${s.name === 'София' ? 's-total' : 's-other'}" d="${d}"/>`;
+  });
+  ends.sort((a, b) => a.y - b.y);
+  for (let i = 1; i < ends.length; i++) if (ends[i].y - ends[i - 1].y < 13) ends[i].y = ends[i - 1].y + 13; // avoid overlapping labels
+  const labels = ends.map((e) => `<text class="${e.name === 'София' ? 'end-lbl' : 'axis'}" x="${W - Rr + 8}" y="${e.y + 4}">${esc(cn(e.name))}</text>`).join('');
+  const so = O.cities['София'].history, sk = Object.keys(so).sort();
+  const pick = (yr) => sk.find((k) => k.startsWith(String(yr)));
+  const k15 = pick(2015), kl = sk[sk.length - 1];
+  const note = k15 ? (bg
+    ? `В София медианната цена на предлагане е ${fInt(so[kl].eur_m2)} €/м² — ${fDec(so[kl].eur_m2 / so[k15].eur_m2, 1)} пъти повече от ${fmtDate(k15)} (${fInt(so[k15].eur_m2)} €/м²).`
+    : `In Sofia the median asking price is €${fInt(so[kl].eur_m2)}/m² — ${fDec(so[kl].eur_m2 / so[k15].eur_m2, 1)}× the level of ${fmtDate(k15)} (€${fInt(so[k15].eur_m2)}/m²).`) : '';
+  return `<div class="group-title" style="margin:32px 0 6px">${bg ? 'Цена на предлагане, €/м², по тримесечия' : 'Asking price, €/m², quarterly'}</div>
+    <svg class="line-chart" viewBox="0 0 ${W} ${Hh}" role="img" aria-label="${bg ? 'Цени на предлагане във времето' : 'Asking prices over time'}">${grid}${lines.join('')}${labels}</svg>
+    ${note ? `<p class="chart-note">${note}</p>` : ''}`;
+}
+
 /* ── migration ─────────────────────────────────────────── */
 const MIG = window.MIGRATION;
 const NUTS2 = { NW: 'BG31', NC: 'BG32', NE: 'BG33', SE: 'BG34', SW: 'BG41', SC: 'BG42' };
@@ -666,6 +854,8 @@ function renderFooter() {
     [`Регистрирани МПС — МВР, ${fmtDate(V.date)}`, 'https://data.egov.bg'],
     ['Жилищен фонд — НСИ, 31.12.2024', 'https://www.nsi.bg/statistical-data/244/786'],
     [`Вътрешна и външна миграция — НСИ, ${MIG.external.year} г.`, 'https://www.nsi.bg'],
+    ['Индекси на цените и показатели за продажбите на жилища — НСИ; индекс на цените от 2015 г. — Евростат', 'https://www.nsi.bg'],
+    ['Средни цени на предлагане по квартали — imot.bg', 'https://www.imot.bg/sredni-ceni'],
     ['Население, демография, БВП и площ по области — Евростат', 'https://ec.europa.eu/eurostat/web/regions/database'],
     ['Граници на областите — geoBoundaries (CC BY 4.0)', 'https://www.geoboundaries.org'],
   ] : [
@@ -673,6 +863,8 @@ function renderFooter() {
     [`Registered vehicles — Ministry of Interior, ${fmtDate(V.date)}`, 'https://data.egov.bg'],
     ['Housing stock — NSI, 31 Dec 2024', 'https://www.nsi.bg/statistical-data/244/786'],
     [`Internal and international migration — NSI, ${MIG.external.year}`, 'https://www.nsi.bg'],
+    ['House price indices and housing sales indicators — NSI; house price index since 2015 — Eurostat', 'https://www.nsi.bg'],
+    ['Median asking prices by neighbourhood — imot.bg', 'https://www.imot.bg/sredni-ceni'],
     ['Population, demography, GDP and area by region — Eurostat', 'https://ec.europa.eu/eurostat/web/regions/database'],
     ['Region boundaries — geoBoundaries (CC BY 4.0)', 'https://www.geoboundaries.org'],
   ];
@@ -688,7 +880,7 @@ function applyLang() {
   $('#search').placeholder = t('search');
   $('#langBtn').textContent = lang === 'bg' ? 'EN' : 'БГ';
   renderKpis(); renderMetricPicker(); renderMap(); renderPanel(); renderTable();
-  renderGap(); renderCities(); renderMigration(); renderVehicles(); renderHousing(); renderInsights(); renderFooter();
+  renderGap(); renderCities(); renderMigration(); renderVehicles(); renderHousing(); renderPrices(); renderInsights(); renderFooter();
 }
 $('#langBtn').addEventListener('click', () => {
   lang = lang === 'bg' ? 'en' : 'bg';

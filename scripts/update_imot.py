@@ -1,0 +1,131 @@
+#!/usr/bin/env python3
+"""Build data/offer_prices.js — median ASKING prices of flats from imot.bg/sredni-ceni.
+
+Usage:  python3 scripts/update_imot.py                 # latest weekly table
+        python3 scripts/update_imot.py --backfill 2010  # also one snapshot per quarter since 2010
+
+imot.bg publishes a weekly table of median asking prices (EUR and EUR/m²) by neighbourhood for
+1-, 2- and 3-room flats. These are prices in listings, not transaction prices.
+Each run stores the latest table per city and appends a city summary to the history; for Sofia the
+per-neighbourhood EUR/m² is kept too. Past weeks are available at ?year=YYYY&date=D.M.YYYY.
+Standard library + curl only; requests are 1 s apart.
+"""
+import html
+import json
+import re
+import statistics
+import subprocess
+import sys
+import time
+from datetime import date
+from pathlib import Path
+
+OUT = Path(__file__).resolve().parent.parent / "data" / "offer_prices.js"
+URL = "https://www.imot.bg/sredni-ceni/prodazhbi-{}"
+CITIES = [("София", "sofiya"), ("Пловдив", "plovdiv"), ("Варна", "varna"),
+          ("Бургас", "burgas"), ("Русе", "ruse"), ("Стара Загора", "stara-zagora")]
+
+
+def fetch(slug, query=""):
+    time.sleep(1)
+    raw = subprocess.run(["curl", "-sSfL", "-A", "bulgaria-in-numbers (non-commercial statistics page)", URL.format(slug) + query],
+                         check=True, capture_output=True).stdout
+    return raw.decode("cp1251", "replace")
+
+
+def num(s):
+    s = re.sub(r"[\s\xa0]", "", s)
+    return int(s) if s.isdigit() else None
+
+
+def parse(page):
+    d, m, y = re.search(r"на база на сайта.*?от\s*(?:<[^>]+>)?\s*(\d{1,2})\.(\d{1,2})\.(\d{4})", page, re.S).groups()
+    table = re.search(r'<table class="sredni-ceni[^"]*">(.*?)</table>', page, re.S).group(1)
+    rows = []
+    for tr in re.findall(r"<tr[^>]*>(.*?)</tr>", table, re.S):
+        cells = [html.unescape(re.sub(r"<[^>]+>", "", c)).strip() for c in re.findall(r"<td[^>]*>(.*?)</td>", tr, re.S)]
+        if len(cells) != 8 or not cells[0]:
+            continue
+        v = [num(c) for c in cells[1:]]
+        rows.append({"name": re.sub(r"\s+", " ", cells[0]),
+                     "r1": [v[0], v[1]], "r2": [v[2], v[3]], "r3": [v[4], v[5]], "total": v[6]})
+    return f"{y}-{int(m):02d}-{int(d):02d}", rows
+
+
+def med(values):
+    values = [x for x in values if x]
+    return round(statistics.median(values)) if values else None
+
+
+def summary(rows):
+    return {
+        "eur_m2": med(r["total"] for r in rows),
+        "eur_m2_r1": med(r["r1"][1] for r in rows),
+        "eur_m2_r2": med(r["r2"][1] for r in rows),
+        "eur_m2_r3": med(r["r3"][1] for r in rows),
+        "price_r2": med(r["r2"][0] for r in rows),
+        "price_r3": med(r["r3"][0] for r in rows),
+        "districts": sum(1 for r in rows if r["total"]),
+    }
+
+
+def store(c, city, snap_date, rows):
+    c["history"][snap_date] = summary(rows)
+    c["history"] = dict(sorted(c["history"].items()))
+    if city == "София":
+        dh = c.setdefault("district_history", {})
+        dh[snap_date] = {r["name"]: r["total"] for r in rows if r["total"]}
+        c["district_history"] = dict(sorted(dh.items()))
+
+
+def quarter_ends(page, year):
+    """Last published date of each quarter in the year's date list."""
+    best = {}
+    for d, m in re.findall(r'<option value="(\d{1,2})\.(\d{1,2})\.' + str(year) + '"', page):
+        q = (int(m) - 1) // 3
+        key = (int(m), int(d))
+        if q not in best or key > best[q]:
+            best[q] = key
+    return [f"{d}.{m}.{year}" for m, d in (best[q] for q in sorted(best))]
+
+
+def backfill(data, start):
+    for city, slug in CITIES:
+        c = data["cities"].setdefault(city, {"history": {}})
+        for year in range(start, date.today().year + 1):
+            page = fetch(slug, f"?year={year}")
+            for d in quarter_ends(page, year):
+                dd, mm, yy = d.split(".")
+                iso = f"{yy}-{int(mm):02d}-{int(dd):02d}"
+                if iso in c["history"]:
+                    continue
+                snap_date, rows = parse(fetch(slug, f"?year={year}&date={d}"))
+                store(c, city, snap_date, rows)
+            print(f"  {city} {year}: {len(c['history'])} snapshots", flush=True)
+
+
+def main():
+    data = {"source": "imot.bg", "cities": {}}
+    if OUT.exists():
+        text = OUT.read_text(encoding="utf-8")
+        data = json.loads(text[text.index("{"):text.rstrip().rstrip(";").rindex("}") + 1])
+    if "--backfill" in sys.argv:
+        backfill(data, int(sys.argv[sys.argv.index("--backfill") + 1]))
+    for city, slug in CITIES:
+        snap_date, rows = parse(fetch(slug))
+        c = data["cities"].setdefault(city, {"history": {}})
+        c["date"], c["districts"] = snap_date, rows
+        store(c, city, snap_date, rows)
+        print(f"  {city}: {snap_date}, {len(rows)} districts, median {c['history'][snap_date]['eur_m2']} €/m²")
+    data["fetched"] = date.today().isoformat()
+    OUT.write_text(
+        "// Generated by scripts/update_imot.py from imot.bg/sredni-ceni — do not edit by hand.\n"
+        "// Median ASKING prices in EUR; r1/r2/r3 = [price, EUR/m²] for 1/2/3-room flats; history = city summaries by date.\n"
+        "window.OFFER_PRICES = " + json.dumps(data, ensure_ascii=False, separators=(",", ":")) + ";\n",
+        encoding="utf-8",
+    )
+    print(f"Wrote {OUT}")
+
+
+if __name__ == "__main__":
+    main()

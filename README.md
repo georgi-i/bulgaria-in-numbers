@@ -12,6 +12,7 @@ Population, economy, vehicles and housing across Bulgaria's 28 regions — an in
 - Internal and international migration
 - Vehicles by category, brand and age
 - Housing by rooms, urban/rural split and per resident
+- House prices and sales, with a focus on Sofia
 - Insights computed directly from the data
 - Light and dark mode, mobile friendly
 
@@ -22,6 +23,9 @@ Population, economy, vehicles and housing across Bulgaria's 28 regions — an in
 | Population by permanent and current address, by municipality and settlement | [GRAO](https://www.grao.bg/tables.html) | 15 Oct 2026 |
 | Registered vehicles, fuel, emission class, first registrations | [Ministry of Interior / data.egov.bg](https://data.egov.bg) | Nov 2026 |
 | Internal and international migration | [NSI](https://www.nsi.bg) | 2025 |
+| House price indices and housing sales indicators (national, regions, six largest cities) | [NSI](https://www.nsi.bg) | Q2 2026 |
+| House price index since 2015 | [Eurostat](https://ec.europa.eu/eurostat/databrowser/view/prc_hpi_q/default/table) | Q2 2026 |
+| Median asking prices by neighbourhood (6 largest cities) | [imot.bg](https://www.imot.bg/sredni-ceni) | quarterly since 2010, latest 5 Nov 2026 |
 | Housing stock | [NSI](https://www.nsi.bg/statistical-data/244/786) | 31 Dec 2024 |
 | Population, age, birth/death rates, migration, GDP, area | [Eurostat](https://ec.europa.eu/eurostat/web/regions/database) | 2024–2025 |
 | Region boundaries | [geoBoundaries](https://www.geoboundaries.org) (CC BY 4.0) | — |
@@ -51,6 +55,15 @@ python3 scripts/update_mvr.py path/to/export_csv.zip --date 2026-11-01
 
 # Migration (NSI) — the two .xlsx tables: internal migration by sex, external migration by age and citizenship
 python3 scripts/update_migration.py internal.xlsx external.xlsx
+
+# House prices and sales (NSI ИЦЖ/ППЖ .xlsx, any number, in any order) + Eurostat index since 2015.
+# New quarters are merged into the existing file, so exporting only the latest quarter is enough.
+python3 scripts/update_housing_market.py ~/Downloads/ИЦЖ*.xlsx ~/Downloads/ППЖ*.xlsx
+
+# Asking prices from imot.bg (weekly; each run adds a snapshot to the history)
+python3 scripts/update_imot.py
+# one-off: load one snapshot per quarter since 2010 (~400 requests, 1 s apart)
+python3 scripts/update_imot.py --backfill 2010
 
 # Eurostat indicators and map boundaries
 python3 scripts/update_eurostat.py
